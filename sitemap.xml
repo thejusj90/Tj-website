@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://thejusjoseph.in/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://thejusjoseph.in/</loc></url>
+  <url><loc>https://thejusjoseph.in/about/</loc></url>
+  <url><loc>https://thejusjoseph.in/work/</loc></url>
+  <url><loc>https://thejusjoseph.in/work/founder/</loc></url>
+  <url><loc>https://thejusjoseph.in/work/program-builder/</loc></url>
+  <url><loc>https://thejusjoseph.in/work/category-builder/</loc></url>
+  <url><loc>https://thejusjoseph.in/expertise/</loc></url>
+  <url><loc>https://thejusjoseph.in/expertise/founders/</loc></url>
+  <url><loc>https://thejusjoseph.in/expertise/incubators/</loc></url>
+  <url><loc>https://thejusjoseph.in/expertise/ecosystems/</loc></url>
+  <url><loc>https://thejusjoseph.in/expertise/impact/</loc></url>
+  <url><loc>https://thejusjoseph.in/insights/</loc></url>
+  <url><loc>https://thejusjoseph.in/contact/</loc></url>
 </urlset>
