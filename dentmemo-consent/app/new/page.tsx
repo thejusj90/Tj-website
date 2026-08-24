@@ -41,6 +41,7 @@ export default function NewConsentPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [consentRef, setConsentRef] = useState("");
+  const [consentId, setConsentId] = useState("");
   const [editingConsent, setEditingConsent] = useState(false);
   const [signerTouched, setSignerTouched] = useState(false);
   const [recentDoctors, setRecentDoctors] = useState<string[]>([]);
@@ -125,8 +126,9 @@ export default function NewConsentPage() {
       const saved = await saveRes.json();
       const ref = saved.consentRef as string;
       setConsentRef(ref);
+      if (saved.consentId) setConsentId(saved.consentId as string);
 
-      const finalPayload = { ...payload, consentRef: ref };
+      const finalPayload = { ...payload, consentRef: ref, consentId: saved.consentId };
 
       const pdfRes = await fetch("/api/pdf", {
         method: "POST",
@@ -190,6 +192,7 @@ export default function NewConsentPage() {
           to: form.clinicEmail,
           patientName: form.patientName,
           consentRef,
+          consentId,
           pdfBase64,
         }),
       });
@@ -407,6 +410,7 @@ export default function NewConsentPage() {
                         setForm(initialForm);
                         setPdfUrl(null);
                         setConsentRef("");
+                        setConsentId("");
                         setStep(1);
                         setMessage(null);
                         setEditingConsent(false);

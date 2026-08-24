@@ -10,7 +10,21 @@ type Row = {
   procedure: string;
   tooth?: string;
   signedAt: string;
+  emailStatus?: string;
 };
+
+function formatEmailStatus(status?: string) {
+  switch (status) {
+    case "sent":
+      return "Sent";
+    case "pending":
+      return "Pending";
+    case "failed":
+      return "Failed";
+    default:
+      return "-";
+  }
+}
 
 export default function ConsentsPage() {
   const [rows, setRows] = useState<Row[]>([]);
@@ -73,6 +87,7 @@ export default function ConsentsPage() {
                   <th>Doctor</th>
                   <th>Tooth</th>
                   <th>Signed</th>
+                  <th>Email</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,6 +99,7 @@ export default function ConsentsPage() {
                     <td>{row.doctor}</td>
                     <td>{row.tooth || "-"}</td>
                     <td>{new Date(row.signedAt).toLocaleString()}</td>
+                    <td>{formatEmailStatus(row.emailStatus)}</td>
                   </tr>
                 ))}
               </tbody>

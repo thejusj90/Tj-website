@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
 import type { ConsentForm } from "@/lib/types";
 
 const A4 = { width: 595.28, height: 841.89 };
 const margin = 52;
+const DEFAULT_CLINIC_ID =
+  process.env.DEFAULT_CLINIC_ID || "00000000-0000-0000-0000-000000000001";
 
 function wrap(text: string, font: PDFFont, size: number, maxWidth: number) {
   const words = text.replace(/\s+/g, " ").trim().split(" ");
@@ -24,7 +27,7 @@ function wrap(text: string, font: PDFFont, size: number, maxWidth: number) {
 }
 
 export async function POST(request: Request) {
-  const data = (await request.json()) as ConsentForm;
+  const data = (await request.json()) as ConsentForm & { consentId?: string };
 
   if (!data.consentRef || !data.patientName || !data.signatureDataUrl) {
     return NextResponse.json({ error: "Incomplete signed consent payload." }, { status: 400 });
@@ -183,6 +186,30 @@ export async function POST(request: Request) {
   footer(page, pageNumber);
 
   const bytes = await pdf.save();
+
+  if (data.consentId) {
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      const pdfPath = `${DEFAULT_CLINIC_ID}/${data.consentId}/consent.pdf`;
+      const { error: uploadError } = await supabase.storage
+        .from("consent-pdfs")
+        .upload(pdfPath, Buffer.from(bytes), { contentType: "application/pdf", upsert: true });
+
+      if (!uploadError) {
+        await supabase
+          .from("consents")
+          .update({ pdf_storage_path: pdfPath })
+          .eq("id", data.consentId);
+
+        await supabase.from("audit_events").insert({
+          clinic_id: DEFAULT_CLINIC_ID,
+          consent_id: data.consentId,
+          event_type: "pdf_generated",
+          metadata: { consent_ref: data.consentRef },
+        });
+      }
+    }
+  }
 
   return new NextResponse(Buffer.from(bytes), {
     status: 200,
