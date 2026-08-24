@@ -1,0 +1,21 @@
+export type ConsentForm = {
+  patientName: string;
+  patientId: string;
+  dob: string;
+  age: string;
+  phone: string;
+  doctor: string;
+  procedure: string;
+  tooth: string;
+  templateSlug: string;
+  consentTitle: string;
+  consentBody: string;
+  acknowledgements: string[];
+  acceptedAcknowledgements: boolean[];
+  signerName: string;
+  signatureDataUrl: string;
+  signedAt?: string;
+  consentRef?: string;
+  clinicName: string;
+  clinicEmail: string;
+};
