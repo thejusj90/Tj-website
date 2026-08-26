@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import SignaturePad from "@/components/SignaturePad";
 import StepIndicator from "@/components/StepIndicator";
 import { consentTemplates, getTemplate } from "@/lib/templates";
+import { useRequireSession } from "@/lib/use-session";
 import type { ConsentForm } from "@/lib/types";
 
 const clinicNameDefault =
@@ -35,6 +36,7 @@ const initialForm: ConsentForm = {
 };
 
 export default function NewConsentPage() {
+  const { email, ready, signOut } = useRequireSession();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<ConsentForm>(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -208,6 +210,14 @@ export default function NewConsentPage() {
     }
   }
 
+  if (!ready) {
+    return (
+      <main className="shell">
+        <div className="container"><div className="empty">Loading...</div></div>
+      </main>
+    );
+  }
+
   return (
     <main className="shell">
       <header className="topbar">
@@ -217,6 +227,11 @@ export default function NewConsentPage() {
         </Link>
         <nav className="nav">
           <Link href="/consents" className="btn btnSecondary hideMobile">Records</Link>
+          {email && (
+            <button type="button" className="btn btnSecondary hideMobile" onClick={signOut}>
+              Sign out
+            </button>
+          )}
         </nav>
       </header>
 

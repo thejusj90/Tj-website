@@ -135,3 +135,30 @@ What could **not** be verified from inside this session: an actual HTTP round tr
 - `supabase/schema.sql` in this repo now reflects the live schema exactly (previously it was Phase 1's flat single-table starter schema) — it's a faithful, re-runnable script, not just documentation.
 - `.env.example` gained `DEFAULT_CLINIC_ID`. `.env.local` (gitignored, not committed) holds the real project URL, service role key, and clinic ID for local development against the live backend.
 - Nothing from Phase 1's `localStorage`-fallback demo mode was removed — if Supabase isn't configured, the app still degrades to browser-only storage exactly as before.
+
+---
+
+## Phase 3 addendum — invite-gated magic-link login
+
+Minimal auth, scoped to exactly what was asked: gate the app behind login, let the owner invite specific people, let the owner (via Claude) revoke access. Full Supabase Auth + multi-clinic onboarding from the original Phase 3 plan is still not built — this is the smallest real slice of it.
+
+### What changed
+
+- **`clinic_invites` table** (`email` primary key, `clinic_id`, `role`, `claimed_at`): the allowlist. A row here means that email is authorized to join that clinic. `claimed_at` is set the first time they actually sign in.
+- **`/login`**: email input → `supabase.auth.signInWithOtp()` → Supabase emails a one-time sign-in link. No password anywhere.
+- **`/auth/callback`**: where the emailed link lands. Reads the new session, then calls the bootstrap route, then redirects to `/new`.
+- **`POST /api/auth/bootstrap`**: verifies the caller's access token server-side, checks `clinic_invites` for that email, and — only if invited — creates their `clinic_users` row and marks the invite claimed. Not invited → 403, no account created. This is what turns "add a row to a table" into "this specific person can now use the app."
+- **`/new` and `/consents`** now redirect to `/login` if there's no session (`lib/use-session.ts`), and show a **Sign out** button when logged in.
+- **Graceful no-auth fallback preserved**: if `NEXT_PUBLIC_SUPABASE_ANON_KEY` isn't set, the guard hook resolves immediately without redirecting, so local dev without any Supabase config still works exactly like Phase 1's demo mode.
+
+### How access is managed
+
+- **Invite someone**: insert a row into `clinic_invites` (email, clinic_id, role). No code change needed — this is an operational action, currently done by asking Claude, since building a self-serve invite UI was explicitly out of scope for this pass.
+- **Remove someone**: delete their `clinic_users` row (and their `clinic_invites` row, so they can't silently re-claim it). Same as above — an operational action via Claude, not an in-app admin screen, per what was asked for.
+- The first invited user is the account owner (`thejusj90@gmail.com`, role `owner`, seeded directly in the same migration).
+
+### What's still not built
+
+- No in-app UI to invite/remove people — it's a direct database operation for now. Section 18/19 of the original brief (Google login, full clinic onboarding wizard, `owner`/`dentist`/`assistant`/`admin` role enforcement in the UI) is still open.
+- `DEFAULT_CLINIC_ID` is still a single hardcoded clinic — every invited user joins the same one clinic. Real multi-clinic support (a clinic owner signing up and getting *their own* clinic, not the shared demo one) is unbuilt.
+- Not verified end-to-end from this session for the same network-egress reason as the Phase 2 addendum above — `npm run build` is clean, but the actual magic-link email round trip needs to be tested on the live Vercel deployment.

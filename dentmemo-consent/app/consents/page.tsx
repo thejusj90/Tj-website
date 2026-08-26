@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRequireSession } from "@/lib/use-session";
 
 type Row = {
   consentRef: string;
@@ -27,6 +28,7 @@ function formatEmailStatus(status?: string) {
 }
 
 export default function ConsentsPage() {
+  const { email, ready, signOut } = useRequireSession();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +53,14 @@ export default function ConsentsPage() {
     load().finally(() => setLoading(false));
   }, []);
 
+  if (!ready) {
+    return (
+      <main className="shell">
+        <div className="container"><div className="empty">Loading...</div></div>
+      </main>
+    );
+  }
+
   return (
     <main className="shell">
       <header className="topbar">
@@ -58,7 +68,14 @@ export default function ConsentsPage() {
           <span className="logoMark">D</span>
           <span>DentMemo <small>Digital Consent</small></span>
         </Link>
-        <Link href="/new" className="btn btnPrimary">New Consent</Link>
+        <nav className="nav">
+          <Link href="/new" className="btn btnPrimary">New Consent</Link>
+          {email && (
+            <button type="button" className="btn btnSecondary hideMobile" onClick={signOut}>
+              Sign out
+            </button>
+          )}
+        </nav>
       </header>
 
       <div className="container">
