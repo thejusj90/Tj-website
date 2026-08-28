@@ -58,6 +58,7 @@ export default function NewConsentPage() {
   const [consentId, setConsentId] = useState("");
   const [editingConsent, setEditingConsent] = useState(false);
   const [signerTouched, setSignerTouched] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<"not_applicable" | "sending" | "sent" | "failed">("not_applicable");
   const [recentDoctors, setRecentDoctors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function NewConsentPage() {
     if (!canNext) return;
     setSubmitting(true);
     setMessage(null);
+    setEmailStatus("not_applicable");
 
     const signedAt = new Date().toISOString();
     const payload = { ...form, signedAt };
@@ -161,6 +163,10 @@ export default function NewConsentPage() {
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
 
+      if (form.clinicEmail.trim()) {
+        sendEmail(blob, ref, saved.consentId);
+      }
+
       if (form.doctor.trim()) {
         const recents = [form.doctor.trim(), ...recentDoctors.filter((d) => d !== form.doctor.trim())].slice(0, 8);
         setRecentDoctors(recents);
@@ -194,13 +200,10 @@ export default function NewConsentPage() {
     }
   }
 
-  async function emailPdf() {
-    if (!pdfUrl || !form.clinicEmail) return;
-    setMessage(null);
-
+  async function sendEmail(pdfBlob: Blob, ref: string, consentIdForEmail?: string) {
+    setEmailStatus("sending");
     try {
-      const blob = await fetch(pdfUrl).then((r) => r.blob());
-      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const bytes = new Uint8Array(await pdfBlob.arrayBuffer());
       let binary = "";
       bytes.forEach((b) => (binary += String.fromCharCode(b)));
       const pdfBase64 = btoa(binary);
@@ -211,21 +214,25 @@ export default function NewConsentPage() {
         body: JSON.stringify({
           to: form.clinicEmail,
           patientName: form.patientName,
-          consentRef,
-          consentId,
+          consentRef: ref,
+          consentId: consentIdForEmail,
           pdfBase64,
         }),
       });
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Email failed.");
-      setMessage({ type: "success", text: "PDF emailed to the clinic." });
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: error instanceof Error ? error.message : "Email failed.",
-      });
+      setEmailStatus("sent");
+    } catch {
+      setEmailStatus("failed");
     }
+  }
+
+  function retryEmail() {
+    if (!pdfUrl) return;
+    fetch(pdfUrl)
+      .then((r) => r.blob())
+      .then((blob) => sendEmail(blob, consentRef, consentId));
   }
 
   if (!ready) {
@@ -438,12 +445,25 @@ export default function NewConsentPage() {
                     <div className="summaryRow"><span>Patient ID</span><strong>{form.patientId || "-"}</strong></div>
                     <div className="summaryRow"><span>Procedure</span><strong>{form.procedure}</strong></div>
                     <div className="summaryRow"><span>Doctor</span><strong>{form.doctor}</strong></div>
+                    {form.clinicEmail && (
+                      <div className="summaryRow">
+                        <span>Email to clinic</span>
+                        <strong>
+                          {emailStatus === "sending" && "Sending..."}
+                          {emailStatus === "sent" && "Sent"}
+                          {emailStatus === "failed" && "Failed"}
+                        </strong>
+                      </div>
+                    )}
                   </div>
+                  {emailStatus === "failed" && (
+                    <div className="notice noticeError" style={{ marginBottom: 0 }}>
+                      Consent is saved and the PDF is ready, but the email to the clinic failed.{" "}
+                      <button type="button" className="textButton" onClick={retryEmail}>Retry</button>
+                    </div>
+                  )}
                   <div className="buttonRow">
                     <a className="btn btnPrimary" href={pdfUrl} download={`${consentRef}.pdf`}>Download PDF</a>
-                    {form.clinicEmail && (
-                      <button type="button" className="btn btnSecondary" onClick={emailPdf}>Email to clinic</button>
-                    )}
                     <button
                       type="button"
                       className="btn btnSecondary"
@@ -456,6 +476,7 @@ export default function NewConsentPage() {
                         setMessage(null);
                         setEditingConsent(false);
                         setSignerTouched(false);
+                        setEmailStatus("not_applicable");
                       }}
                     >
                       Start another
