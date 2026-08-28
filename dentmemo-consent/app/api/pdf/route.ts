@@ -134,7 +134,9 @@ export async function POST(request: Request) {
     lines.forEach((line, i) => {
       ensure(lineHeight);
       if (i === 0) {
-        const boxY = y - boxSize + 1.5;
+        // Aligned to sit on the text baseline and rise to roughly cap-height,
+        // rather than hanging below the line like a subscript.
+        const boxY = y - 1;
         if (accepted) {
           page.drawRectangle({ x: margin, y: boxY, width: boxSize, height: boxSize, color: blue });
           page.drawLine({ start: { x: margin + 1.5, y: boxY + 4 }, end: { x: margin + 3.3, y: boxY + 2 }, thickness: 1, color: white });
