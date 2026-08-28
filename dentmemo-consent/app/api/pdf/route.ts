@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import type { ConsentForm } from "@/lib/types";
 
 const A4 = { width: 595.28, height: 841.89 };
-const margin = 52;
+const margin = 48;
 const DEFAULT_CLINIC_ID =
   process.env.DEFAULT_CLINIC_ID || "00000000-0000-0000-0000-000000000001";
 
@@ -26,6 +26,37 @@ function wrap(text: string, font: PDFFont, size: number, maxWidth: number) {
   return lines;
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return Promise.race([
+    promise,
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
+  ]);
+}
+
+async function fetchClinicLogo(clinicId: string) {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  try {
+    const clinicResult = await withTimeout(
+      Promise.resolve(supabase.from("clinics").select("logo_storage_path").eq("id", clinicId).maybeSingle()),
+      4000
+    );
+    const logoPath = clinicResult?.data?.logo_storage_path as string | undefined;
+    if (!logoPath) return null;
+
+    const downloadResult = await withTimeout(
+      Promise.resolve(supabase.storage.from("clinic-branding").download(logoPath)),
+      4000
+    );
+    if (!downloadResult || downloadResult.error || !downloadResult.data) return null;
+    return Buffer.from(await downloadResult.data.arrayBuffer());
+  } catch {
+    // A logo lookup failure should never block consent PDF generation.
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   const data = (await request.json()) as ConsentForm & { consentId?: string };
 
@@ -44,25 +75,26 @@ export async function POST(request: Request) {
   const navy = rgb(0.06, 0.09, 0.16);
   const slate = rgb(0.28, 0.35, 0.44);
   const blue = rgb(0.15, 0.39, 0.92);
+  const white = rgb(1, 1, 1);
   const light = rgb(0.87, 0.9, 0.94);
 
   const footer = (p: PDFPage, n: number) => {
     p.drawLine({
-      start: { x: margin, y: 36 },
-      end: { x: A4.width - margin, y: 36 },
+      start: { x: margin, y: 34 },
+      end: { x: A4.width - margin, y: 34 },
       thickness: 0.5,
       color: light,
     });
     p.drawText(`${data.consentRef} - Page ${n}`, {
       x: margin,
-      y: 22,
+      y: 21,
       size: 8,
       font: regular,
       color: slate,
     });
     p.drawText("Generated using DentMemo Consent", {
       x: A4.width - margin - 150,
-      y: 22,
+      y: 21,
       size: 8,
       font: regular,
       color: slate,
@@ -77,38 +109,73 @@ export async function POST(request: Request) {
   };
 
   const ensure = (height: number) => {
-    if (y - height < 58) newPage();
+    if (y - height < 48) newPage();
   };
 
-  const drawWrapped = (text: string, size = 10.5, lineHeight = 16, font = regular, color = navy) => {
-    const lines = wrap(text, font, size, A4.width - margin * 2);
+  const drawWrapped = (text: string, size = 10, lineHeight = 14.5, font = regular, color = navy, indent = 0) => {
+    const lines = wrap(text, font, size, A4.width - margin * 2 - indent);
     for (const line of lines) {
       ensure(lineHeight);
-      page.drawText(line, { x: margin, y, size, font, color });
+      page.drawText(line, { x: margin + indent, y, size, font, color });
       y -= lineHeight;
     }
   };
 
-  page.drawText("DentMemo Consent", {
-    x: margin,
-    y,
-    size: 21,
-    font: bold,
-    color: blue,
-  });
-  y -= 25;
+  // Checkbox glyph: filled blue square with a white check for accepted
+  // acknowledgements, an outlined square otherwise. Text wraps with a
+  // fixed indent so continuation lines line up under the first line.
+  const drawAcknowledgement = (text: string, accepted: boolean) => {
+    const size = 9.5;
+    const lineHeight = 13.5;
+    const indent = 16;
+    const boxSize = 8;
+    const lines = wrap(text, regular, size, A4.width - margin * 2 - indent);
 
-  page.drawText(data.clinicName || "Dental Clinic", {
-    x: margin,
-    y,
-    size: 11,
-    font: bold,
-    color: navy,
-  });
-  y -= 28;
+    lines.forEach((line, i) => {
+      ensure(lineHeight);
+      if (i === 0) {
+        const boxY = y - boxSize + 1.5;
+        if (accepted) {
+          page.drawRectangle({ x: margin, y: boxY, width: boxSize, height: boxSize, color: blue });
+          page.drawLine({ start: { x: margin + 1.5, y: boxY + 4 }, end: { x: margin + 3.3, y: boxY + 2 }, thickness: 1, color: white });
+          page.drawLine({ start: { x: margin + 3.3, y: boxY + 2 }, end: { x: margin + 6.5, y: boxY + 6.5 }, thickness: 1, color: white });
+        } else {
+          page.drawRectangle({ x: margin, y: boxY, width: boxSize, height: boxSize, borderColor: slate, borderWidth: 1 });
+        }
+      }
+      page.drawText(line, { x: margin + indent, y, size, font: regular, color: navy });
+      y -= lineHeight;
+    });
+  };
 
-  drawWrapped(data.consentTitle, 16, 21, bold);
-  y -= 8;
+  const logoBytes = await fetchClinicLogo(DEFAULT_CLINIC_ID);
+  let logoImage: PDFImage | null = null;
+  if (logoBytes) {
+    try {
+      logoImage = await pdf.embedPng(logoBytes);
+    } catch {
+      try {
+        logoImage = await pdf.embedJpg(logoBytes);
+      } catch {
+        logoImage = null;
+      }
+    }
+  }
+
+  const headerTextX = logoImage ? margin + 46 : margin;
+  if (logoImage) {
+    const maxDim = 36;
+    const scale = Math.min(maxDim / logoImage.width, maxDim / logoImage.height, 1);
+    page.drawImage(logoImage, { x: margin, y: y - maxDim + 6, width: logoImage.width * scale, height: logoImage.height * scale });
+  }
+
+  page.drawText("DentMemo Consent", { x: headerTextX, y, size: 18, font: bold, color: blue });
+  y -= 20;
+  page.drawText(data.clinicName || "Dental Clinic", { x: headerTextX, y, size: 10, font: bold, color: navy });
+  y -= 24;
+
+  drawWrapped(data.consentTitle, 14.5, 18, bold);
+  y -= 6;
 
   const meta = [
     ["Patient", data.patientName],
@@ -121,56 +188,42 @@ export async function POST(request: Request) {
   ];
 
   for (const [label, value] of meta) {
-    ensure(18);
-    page.drawText(`${label}:`, { x: margin, y, size: 9.5, font: bold, color: slate });
-    page.drawText(value, { x: margin + 78, y, size: 9.5, font: regular, color: navy });
-    y -= 15;
+    ensure(14);
+    page.drawText(`${label}:`, { x: margin, y, size: 9, font: bold, color: slate });
+    page.drawText(value, { x: margin + 74, y, size: 9, font: regular, color: navy });
+    y -= 13;
   }
 
-  y -= 13;
-  drawWrapped(data.consentBody, 10.5, 16, regular, navy);
-  y -= 22;
+  y -= 10;
+  drawWrapped(data.consentBody, 10, 14.5, regular, navy);
+  y -= 16;
 
-  ensure(40);
-  page.drawText("Signature & Acknowledgements", {
-    x: margin,
-    y,
-    size: 14,
-    font: bold,
-    color: navy,
-  });
-  y -= 24;
+  ensure(30);
+  page.drawText("Signature & Acknowledgements", { x: margin, y, size: 12.5, font: bold, color: navy });
+  y -= 19;
 
   data.acknowledgements.forEach((ack, i) => {
-    const accepted = data.acceptedAcknowledgements[i];
-    const prefix = accepted ? "[X] " : "[ ] ";
-    drawWrapped(prefix + ack, 9.8, 15, regular, navy);
+    drawAcknowledgement(ack, Boolean(data.acceptedAcknowledgements[i]));
     y -= 3;
   });
 
-  y -= 10;
+  y -= 8;
 
   if (data.signatureDataUrl.startsWith("data:image/png;base64,")) {
     try {
       const signatureBytes = Buffer.from(data.signatureDataUrl.split(",")[1], "base64");
       const signature = await pdf.embedPng(signatureBytes);
-      const maxW = 230;
-      const maxH = 90;
+      const maxW = 210;
+      const maxH = 70;
       const scale = Math.min(maxW / signature.width, maxH / signature.height, 1);
       const w = signature.width * scale;
       const h = signature.height * scale;
-      ensure(h + 80);
+      ensure(h + 60);
 
-      page.drawText("Patient Signature", {
-        x: margin,
-        y,
-        size: 9.5,
-        font: bold,
-        color: slate,
-      });
-      y -= 8;
+      page.drawText("Patient Signature", { x: margin, y, size: 9, font: bold, color: slate });
+      y -= 7;
       page.drawImage(signature, { x: margin, y: y - h, width: w, height: h });
-      y -= h + 14;
+      y -= h + 12;
     } catch {
       // If the canvas payload is malformed, keep the document usable and show text evidence.
     }
@@ -178,10 +231,10 @@ export async function POST(request: Request) {
 
   const signedAt = data.signedAt || new Date().toISOString();
 
-  drawWrapped(`Consent ID: ${data.consentRef}`, 9.5, 14, bold);
-  drawWrapped(`Signer: ${data.signerName}`, 9.5, 14, regular);
-  drawWrapped(`Signed at: ${signedAt}`, 9.5, 14, regular);
-  drawWrapped("Patient handwritten signature captured electronically.", 9.5, 14, regular);
+  drawWrapped(`Consent ID: ${data.consentRef}`, 9, 13, bold);
+  drawWrapped(`Signer: ${data.signerName}`, 9, 13, regular);
+  drawWrapped(`Signed at: ${signedAt}`, 9, 13, regular);
+  drawWrapped("Patient handwritten signature captured electronically.", 9, 13, regular);
 
   footer(page, pageNumber);
 

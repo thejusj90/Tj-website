@@ -39,11 +39,11 @@ async function findOrCreatePatient(
   body: ConsentForm
 ) {
   const name = body.patientName.trim();
-  if (!name) return null;
+  if (!name) return { id: null, patientCode: null };
 
   let query = supabase
     .from("patients")
-    .select("id")
+    .select("id, patient_code")
     .eq("clinic_id", clinicId)
     .ilike("full_name", name);
 
@@ -52,22 +52,24 @@ async function findOrCreatePatient(
   }
 
   const { data: existing } = await query.limit(1).maybeSingle();
-  if (existing) return existing.id as string;
+  if (existing) return { id: existing.id as string, patientCode: existing.patient_code as string | null };
+
+  const { data: nextCode } = await supabase.rpc("next_patient_code", { target_clinic_id: clinicId });
 
   const { data: created, error } = await supabase
     .from("patients")
     .insert({
       clinic_id: clinicId,
       full_name: name,
-      patient_code: body.patientId?.trim() || null,
+      patient_code: nextCode ?? null,
       dob: body.dob || null,
       phone: body.phone?.trim() || null,
     })
-    .select("id")
+    .select("id, patient_code")
     .single();
 
-  if (error) return null;
-  return created.id as string;
+  if (error) return { id: null, patientCode: null };
+  return { id: created.id as string, patientCode: created.patient_code as string | null };
 }
 
 export async function POST(request: Request) {
@@ -100,10 +102,12 @@ export async function POST(request: Request) {
   const consentId = crypto.randomUUID();
   const clinicId = DEFAULT_CLINIC_ID;
 
-  const [doctorId, patientId] = await Promise.all([
+  const [doctorId, patient] = await Promise.all([
     findOrCreateDoctor(supabase, clinicId, body.doctor),
     findOrCreatePatient(supabase, clinicId, body),
   ]);
+  const patientId = patient.id;
+  const patientCode = patient.patientCode;
 
   const template = getTemplate(body.templateSlug);
   const { data: templateRow } = await supabase
@@ -137,7 +141,7 @@ export async function POST(request: Request) {
     template_version: templateRow?.version ?? null,
 
     patient_name: body.patientName,
-    patient_id_snapshot: body.patientId || null,
+    patient_id_snapshot: patientCode,
     patient_dob: body.dob || null,
     patient_age: body.age || null,
     patient_phone: body.phone || null,
@@ -174,6 +178,7 @@ export async function POST(request: Request) {
     consentId,
     consentRef,
     signedAt,
+    patientCode,
   });
 }
 

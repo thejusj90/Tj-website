@@ -13,6 +13,18 @@ const clinicNameDefault =
 const clinicEmailDefault =
   process.env.NEXT_PUBLIC_CLINIC_EMAIL || "";
 
+function calculateAge(dob: string): string {
+  const birth = new Date(dob);
+  if (Number.isNaN(birth.getTime())) return "";
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age -= 1;
+  }
+  return age >= 0 ? String(age) : "";
+}
+
 const initialTemplate = consentTemplates[0];
 
 const initialForm: ConsentForm = {
@@ -129,8 +141,14 @@ export default function NewConsentPage() {
       const ref = saved.consentRef as string;
       setConsentRef(ref);
       if (saved.consentId) setConsentId(saved.consentId as string);
+      if (saved.patientCode) setForm((prev) => ({ ...prev, patientId: saved.patientCode }));
 
-      const finalPayload = { ...payload, consentRef: ref, consentId: saved.consentId };
+      const finalPayload = {
+        ...payload,
+        consentRef: ref,
+        consentId: saved.consentId,
+        patientId: saved.patientCode || payload.patientId,
+      };
 
       const pdfRes = await fetch("/api/pdf", {
         method: "POST",
@@ -265,7 +283,7 @@ export default function NewConsentPage() {
                   </div>
                   <div className="field">
                     <label>Patient ID</label>
-                    <input value={form.patientId} onChange={(e) => update("patientId", e.target.value)} placeholder="P-000184" />
+                    <input value={form.patientId || "Assigned automatically on submit"} disabled readOnly />
                   </div>
                   <div className="field">
                     <label>Phone</label>
@@ -273,11 +291,18 @@ export default function NewConsentPage() {
                   </div>
                   <div className="field">
                     <label>Date of birth</label>
-                    <input type="date" value={form.dob} onChange={(e) => update("dob", e.target.value)} />
+                    <input
+                      type="date"
+                      value={form.dob}
+                      onChange={(e) => {
+                        const dob = e.target.value;
+                        setForm((prev) => ({ ...prev, dob, age: dob ? calculateAge(dob) : prev.age }));
+                      }}
+                    />
                   </div>
                   <div className="field">
                     <label>Age</label>
-                    <input value={form.age} onChange={(e) => update("age", e.target.value)} inputMode="numeric" />
+                    <input value={form.age} onChange={(e) => update("age", e.target.value)} inputMode="numeric" placeholder="Auto-filled from DOB" />
                   </div>
                 </div>
               </>
@@ -410,6 +435,7 @@ export default function NewConsentPage() {
                   <div className="summaryList">
                     <div className="summaryRow"><span>Consent ID</span><strong>{consentRef}</strong></div>
                     <div className="summaryRow"><span>Patient</span><strong>{form.patientName}</strong></div>
+                    <div className="summaryRow"><span>Patient ID</span><strong>{form.patientId || "-"}</strong></div>
                     <div className="summaryRow"><span>Procedure</span><strong>{form.procedure}</strong></div>
                     <div className="summaryRow"><span>Doctor</span><strong>{form.doctor}</strong></div>
                   </div>
