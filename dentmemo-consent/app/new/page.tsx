@@ -251,6 +251,7 @@ export default function NewConsentPage() {
           <span>DentMemo <small>Digital Consent</small></span>
         </Link>
         <nav className="nav">
+          <Link href="/settings/branding" className="btn btnSecondary hideMobile">Settings</Link>
           <Link href="/consents" className="btn btnSecondary hideMobile">Records</Link>
           {email && (
             <button type="button" className="btn btnSecondary hideMobile" onClick={signOut}>

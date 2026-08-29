@@ -120,6 +120,37 @@ export async function POST(request: Request) {
     .limit(1)
     .maybeSingle();
 
+  // Freeze exactly which branding and template version produced this consent,
+  // the same way template_id/template_version above are already frozen —
+  // a later branding or template edit must never change a past consent's PDF.
+  const [{ data: activeBrandProfile }, { data: clinicTemplateVersion }] = await Promise.all([
+    supabase
+      .from("clinic_brand_profiles")
+      .select("id, version")
+      .eq("clinic_id", clinicId)
+      .eq("status", "active")
+      .maybeSingle(),
+    supabase
+      .from("consent_template_versions")
+      .select("id")
+      .eq("clinic_id", clinicId)
+      .eq("base_template_slug", template.slug)
+      .eq("status", "active")
+      .maybeSingle(),
+  ]);
+
+  let templateVersionId = clinicTemplateVersion?.id ?? null;
+  if (!templateVersionId) {
+    const { data: globalTemplateVersion } = await supabase
+      .from("consent_template_versions")
+      .select("id")
+      .is("clinic_id", null)
+      .eq("base_template_slug", template.slug)
+      .eq("status", "active")
+      .maybeSingle();
+    templateVersionId = globalTemplateVersion?.id ?? null;
+  }
+
   const signatureBytes = Buffer.from(body.signatureDataUrl.split(",")[1], "base64");
   const signaturePath = `${clinicId}/${consentId}/signature.png`;
 
@@ -139,6 +170,9 @@ export async function POST(request: Request) {
     doctor_id: doctorId,
     template_id: templateRow?.id ?? null,
     template_version: templateRow?.version ?? null,
+    template_version_id: templateVersionId,
+    brand_profile_id: activeBrandProfile?.id ?? null,
+    brand_profile_version: activeBrandProfile?.version ?? null,
 
     patient_name: body.patientName,
     patient_id_snapshot: patientCode,

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash } from "crypto";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import type { ConsentForm } from "@/lib/types";
@@ -33,26 +34,51 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
   ]);
 }
 
-async function fetchClinicLogo(clinicId: string) {
+type BrandProfile = {
+  letterhead_mode: "generated" | "uploaded";
+  branding_style: string | null;
+  clinic_display_name: string | null;
+  clinic_address: string | null;
+  clinic_phone: string | null;
+  accent_color: string | null;
+  logo_storage_path: string | null;
+};
+
+async function fetchActiveBrandProfile(clinicId: string): Promise<BrandProfile | null> {
   const supabase = getSupabaseAdmin();
   if (!supabase) return null;
 
   try {
-    const clinicResult = await withTimeout(
-      Promise.resolve(supabase.from("clinics").select("logo_storage_path").eq("id", clinicId).maybeSingle()),
+    const result = await withTimeout(
+      Promise.resolve(
+        supabase
+          .from("clinic_brand_profiles")
+          .select("letterhead_mode, branding_style, clinic_display_name, clinic_address, clinic_phone, accent_color, logo_storage_path")
+          .eq("clinic_id", clinicId)
+          .eq("status", "active")
+          .maybeSingle()
+      ),
       4000
     );
-    const logoPath = clinicResult?.data?.logo_storage_path as string | undefined;
-    if (!logoPath) return null;
+    return (result?.data as BrandProfile) ?? null;
+  } catch {
+    // A branding lookup failure should never block consent PDF generation.
+    return null;
+  }
+}
 
+async function fetchLogoBytes(logoStoragePath: string) {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  try {
     const downloadResult = await withTimeout(
-      Promise.resolve(supabase.storage.from("clinic-branding").download(logoPath)),
+      Promise.resolve(supabase.storage.from("clinic-branding").download(logoStoragePath)),
       4000
     );
     if (!downloadResult || downloadResult.error || !downloadResult.data) return null;
     return Buffer.from(await downloadResult.data.arrayBuffer());
   } catch {
-    // A logo lookup failure should never block consent PDF generation.
     return null;
   }
 }
@@ -150,20 +176,35 @@ export async function POST(request: Request) {
     });
   };
 
-  const logoBytes = await fetchClinicLogo(DEFAULT_CLINIC_ID);
+  const brandProfile = await fetchActiveBrandProfile(DEFAULT_CLINIC_ID);
+
   let logoImage: PDFImage | null = null;
-  if (logoBytes) {
-    try {
-      logoImage = await pdf.embedPng(logoBytes);
-    } catch {
+  if (brandProfile?.letterhead_mode === "uploaded" && brandProfile.logo_storage_path) {
+    const logoBytes = await fetchLogoBytes(brandProfile.logo_storage_path);
+    if (logoBytes) {
       try {
-        logoImage = await pdf.embedJpg(logoBytes);
+        logoImage = await pdf.embedPng(logoBytes);
       } catch {
-        logoImage = null;
+        try {
+          logoImage = await pdf.embedJpg(logoBytes);
+        } catch {
+          logoImage = null;
+        }
       }
     }
   }
 
+  const accentHex = brandProfile?.accent_color;
+  const accent =
+    accentHex && /^#[0-9a-fA-F]{6}$/.test(accentHex)
+      ? rgb(
+          parseInt(accentHex.slice(1, 3), 16) / 255,
+          parseInt(accentHex.slice(3, 5), 16) / 255,
+          parseInt(accentHex.slice(5, 7), 16) / 255
+        )
+      : blue;
+
+  const clinicDisplayName = brandProfile?.clinic_display_name || data.clinicName || "Dental Clinic";
   const headerTextX = logoImage ? margin + 46 : margin;
   if (logoImage) {
     const maxDim = 36;
@@ -171,10 +212,19 @@ export async function POST(request: Request) {
     page.drawImage(logoImage, { x: margin, y: y - maxDim + 6, width: logoImage.width * scale, height: logoImage.height * scale });
   }
 
-  page.drawText("DentMemo Consent", { x: headerTextX, y, size: 18, font: bold, color: blue });
+  page.drawText("DentMemo Consent", { x: headerTextX, y, size: 18, font: bold, color: accent });
   y -= 20;
-  page.drawText(data.clinicName || "Dental Clinic", { x: headerTextX, y, size: 10, font: bold, color: navy });
-  y -= 24;
+  page.drawText(clinicDisplayName, { x: headerTextX, y, size: 10, font: bold, color: navy });
+  y -= 14;
+
+  if (brandProfile?.letterhead_mode === "generated") {
+    const contactLine = [brandProfile.clinic_address, brandProfile.clinic_phone].filter(Boolean).join("  ·  ");
+    if (contactLine) {
+      page.drawText(contactLine, { x: headerTextX, y, size: 8.5, font: regular, color: slate });
+      y -= 12;
+    }
+  }
+  y -= 10;
 
   drawWrapped(data.consentTitle, 14.5, 18, bold);
   y -= 6;
@@ -242,6 +292,8 @@ export async function POST(request: Request) {
 
   const bytes = await pdf.save();
 
+  const pdfSha256 = createHash("sha256").update(bytes).digest("hex");
+
   if (data.consentId) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
@@ -253,14 +305,14 @@ export async function POST(request: Request) {
       if (!uploadError) {
         await supabase
           .from("consents")
-          .update({ pdf_storage_path: pdfPath })
+          .update({ pdf_storage_path: pdfPath, pdf_sha256: pdfSha256 })
           .eq("id", data.consentId);
 
         await supabase.from("audit_events").insert({
           clinic_id: DEFAULT_CLINIC_ID,
           consent_id: data.consentId,
           event_type: "pdf_generated",
-          metadata: { consent_ref: data.consentRef },
+          metadata: { consent_ref: data.consentRef, pdf_sha256: pdfSha256 },
         });
       }
     }
