@@ -1,0 +1,1076 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Zeyhi Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#000000;--s1:#0e0e0e;--s2:#161616;--s3:#191919;--s4:#1f1f1f;--line:#262626;--line2:#191919;--ink:#fefefe;--ink2:#c8c8c8;--muted:#8a8a8a;--dim:#6e6e6e;--sig:#ff9138;--sig-ink:#fa7d2a;--on-sig:#000000;--live:#43cf70;--alert:#ff5c4d;--lift:0 18px 48px rgba(0,0,0,.6);--sigbg:rgba(255,145,56,.10);--livebg:rgba(67,207,112,.14);--alertbg:rgba(255,92,77,.14)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){color-scheme:light;--bg:#ffffff;--s1:#f6f6f6;--s2:#efefef;--s3:#e9e9e9;--s4:#e2e2e2;--line:#dcdcdc;--line2:#e6e6e6;--ink:#0e0e0e;--ink2:#3a3a3a;--muted:#6e6e6e;--dim:#8a8a8a;--sig-ink:#e2641c;--live:#1f9d4a;--lift:0 18px 48px rgba(0,0,0,.12);--livebg:rgba(31,157,74,.12)}}
+:root[data-theme="light"]{color-scheme:light;--bg:#ffffff;--s1:#f6f6f6;--s2:#efefef;--s3:#e9e9e9;--s4:#e2e2e2;--line:#dcdcdc;--line2:#e6e6e6;--ink:#0e0e0e;--ink2:#3a3a3a;--muted:#6e6e6e;--dim:#8a8a8a;--sig-ink:#e2641c;--live:#1f9d4a;--lift:0 18px 48px rgba(0,0,0,.12);--livebg:rgba(31,157,74,.12)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Outfit",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit}
+.mono,.lbl,.data,.kbd{font-family:"Martian Mono",ui-monospace,SFMono-Regular,monospace}
+.lbl{font-size:11px;line-height:14px;letter-spacing:.14em;font-weight:500;text-transform:uppercase;color:var(--muted)}
+.data{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.h1{margin:0;font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+.h2{margin:0;font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.01em}
+.sub{font-size:15px;line-height:23px;color:var(--muted)}
+.small{font-size:13px;line-height:19px;color:var(--muted)}
+.card{background:var(--s1);border:1px solid var(--line2);border-radius:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;transition:background .15s,color .15s,border-color .15s;background:transparent}
+.btn-primary{background:var(--sig);color:var(--on-sig)}.btn-primary:hover{filter:brightness(1.08)}
+.btn-secondary{background:var(--s2);color:var(--ink);border-color:var(--line)}.btn-secondary:hover{background:var(--s4)}
+.btn-ghost{color:var(--muted);padding:0 10px}.btn-ghost:hover{color:var(--ink)}
+.btn-sm{height:36px;padding:0 14px;font-size:13px;border-radius:8px}
+.btn-pill{border-radius:999px}
+.btn:focus-visible,.opt:focus-visible,.nav-a:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
+.input{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:10px;background:var(--s1);border:1px solid var(--line);font-size:15px;color:var(--ink);width:100%}
+.input input,.input select{flex:1;min-width:0;background:transparent;border:0;color:var(--ink);font:inherit;outline:0}
+.input input::placeholder{color:var(--dim)}
+textarea.ta{width:100%;min-height:120px;resize:vertical;background:var(--s1);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font:inherit;font-size:14px;line-height:21px}
+.badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.b-direct{background:var(--livebg);color:var(--live)}.b-warm{background:var(--sigbg);color:var(--sig)}.b-weak{background:var(--s3);color:var(--muted)}.b-out{border:1px solid var(--dim);color:var(--muted)}.b-alert{background:var(--alertbg);color:var(--alert)}
+.dot{width:8px;height:8px;border-radius:999px;flex:none}
+.av{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--s3);color:var(--ink);font-weight:600;flex:none;font-size:12px}
+.seg{display:inline-flex;padding:4px;border-radius:10px;background:var(--s1);border:1px solid var(--line2);gap:2px;max-width:100%;overflow-x:auto}
+.seg button{height:34px;padding:0 14px;border-radius:7px;border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--s3);color:var(--ink)}
+.tabs{display:flex;gap:4px;overflow-x:auto}
+.tab{height:36px;padding:0 14px;border-radius:8px;border:0;background:transparent;color:var(--muted);font-size:15px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.tab.on{background:var(--s3);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;background:var(--s1);border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer}
+.chip.on{color:var(--ink);border-color:var(--ink)}
+.kbd{font-size:11px;padding:2px 7px;border-radius:5px;background:var(--s2);border:1px solid var(--line);color:var(--muted)}
+svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.toggle{width:40px;height:22px;border-radius:999px;background:var(--line);position:relative;flex:none;border:0;cursor:pointer;padding:0}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:999px;background:var(--ink);transition:left .2s}
+.toggle.on{background:var(--sig)}.toggle.on::after{left:21px;background:var(--on-sig)}
+/* shell */
+.app{display:flex;height:100%;min-height:100%}
+.side{width:240px;flex:none;display:flex;flex-direction:column;gap:18px;padding:20px 14px 16px;border-right:1px solid var(--line2);background:var(--bg);height:100%;position:sticky;top:0;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.zmark{width:28px;height:28px;border-radius:15%;background:var(--ink);color:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}
+.search-btn{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:10px;background:var(--s1);border:1px solid var(--line2);color:var(--muted);font-size:14px;cursor:pointer;text-align:left;width:100%}
+.nav-g{display:flex;flex-direction:column;gap:4px}
+.nav-g .lbl{padding:0 10px 4px}
+.nav-a{display:flex;align-items:center;gap:10px;height:38px;padding:0 10px;border-radius:8px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border:0;background:transparent;width:100%;text-align:left}
+.nav-a.on{background:var(--s3);color:var(--ink)}
+.nav-a .cnt{margin-left:auto;font-family:"Martian Mono",monospace;font-size:12px}
+.wallet{display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--s1);border:1px solid var(--line2);border-radius:10px;margin-top:auto}
+.bar{height:3px;border-radius:999px;background:var(--s3);overflow:hidden}.bar i{display:block;height:100%;background:var(--sig)}
+.user{display:flex;align-items:center;gap:10px;padding:4px 6px}
+.icon-btn{width:30px;height:30px;border:0;background:transparent;color:var(--dim);display:inline-flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;flex:none}
+.icon-btn:hover{color:var(--ink);background:var(--s2)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%;overflow-y:auto}
+.page{width:100%;max-width:1080px;padding:20px 56px 40px;display:flex;flex-direction:column;gap:28px}
+.page.chat{flex:1;padding-bottom:16px}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;min-height:44px}
+.topbar{display:none}
+.bottombar{display:none}
+.banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:var(--sig);color:var(--on-sig);font-size:14px;font-weight:500;flex-wrap:wrap}
+/* chat */
+.chat-flow{display:flex;flex-direction:column;gap:20px;flex:1}
+.bubble-user{align-self:flex-end;max-width:680px;padding:12px 18px;border-radius:16px 16px 4px 16px;background:var(--s3);font-size:16px;line-height:24px}
+.agent{display:flex;gap:14px;align-items:flex-start}
+.agent .body{display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;padding-top:5px}
+.msg{font-size:16px;line-height:26px;max-width:760px}
+.trace-toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer;border:0;background:transparent;padding:0;height:28px}
+.trace{display:flex;flex-direction:column;gap:10px;padding:12px 16px;border-left:2px solid var(--line);margin:2px 0}
+.trace .st{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--muted);animation:rise .22s ease both}
+.trace .st:nth-child(2){animation-delay:.08s}.trace .st:nth-child(3){animation-delay:.16s}.trace .st:nth-child(4){animation-delay:.24s}
+.trace .ok{width:16px;height:16px;border-radius:999px;background:var(--livebg);color:var(--live);display:inline-flex;align-items:center;justify-content:center;flex:none;margin-top:3px}
+.trace .st b{color:var(--ink);font-weight:500}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.trace .run{width:16px;height:16px;border-radius:999px;border:2px solid var(--sig);border-right-color:transparent;animation:spin .8s linear infinite;flex:none;margin-top:3px}
+.setup-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px;align-items:start}
+.setup-mini{display:none;align-items:center;gap:12px}
+.btn[disabled]{cursor:not-allowed}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.qcard{display:flex;flex-direction:column;gap:18px;padding:22px 24px;background:var(--s1);border:1px solid var(--line2);border-radius:16px;max-width:760px;animation:fade .26s ease both}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opts.two{display:grid;grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;gap:14px;min-height:48px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:15px;cursor:pointer;text-align:left;transition:border-color .15s,background .15s}
+.opt:hover{background:var(--s2)}.opt.on{border-color:var(--sig);background:var(--sigbg)}
+.opt .n{width:24px;height:24px;border-radius:6px;background:var(--s3);display:inline-flex;align-items:center;justify-content:center;font-family:"Martian Mono",monospace;font-size:12px;color:var(--muted);flex:none}
+.opt.on .n{background:var(--sig);color:var(--on-sig)}
+.opt.dashed{border-style:dashed}.opt.dashed span:last-child{color:var(--muted)}
+.composer{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);box-shadow:var(--lift);position:sticky;bottom:0}
+.composer textarea{background:transparent;border:0;color:var(--ink);font:inherit;font-size:16px;resize:none;min-height:28px;outline:0;width:100%}
+.composer textarea::placeholder{color:var(--dim)}
+.crow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quote{border-left:2px solid var(--sig);padding:4px 0 4px 18px;color:var(--ink2);font-size:15px;line-height:24px}
+/* tables + rows */
+.tbl-wrap{overflow-x:auto}
+.tbl{display:grid;align-items:center;min-height:56px;padding:0 16px;border-top:1px solid var(--line2);font-size:14px;gap:12px}
+.tbl.head{min-height:40px;border-top:0}
+.tbl.sel{background:var(--sigbg)}
+.rcard{display:grid;grid-template-columns:1.4fr 1.3fr 1.6fr auto;gap:24px;align-items:center;padding:20px 24px}
+.task{display:flex;gap:16px;padding:18px 22px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.help{display:flex;flex-direction:column;gap:12px;padding:20px;cursor:pointer;transition:border-color .15s}
+.help:hover{border-color:var(--dim)}
+.prompt-pill{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--line2);color:var(--muted);font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.field{display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.field.miss{border:1px dashed var(--sig);background:var(--sigbg)}.field.miss .lbl,.field.miss span{color:var(--sig-ink)}
+.qsel{position:relative}
+.menu{position:absolute;top:100%;left:0;margin-top:6px;min-width:220px;background:var(--s2);border:1px solid var(--line);border-radius:10px;box-shadow:var(--lift);padding:6px;z-index:5;display:flex;flex-direction:column;gap:2px;animation:fade .15s}
+.menu button{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:7px;border:0;background:transparent;font-size:14px;cursor:pointer;text-align:left;width:100%}
+.menu button:hover{background:var(--s3)}
+.send-btn{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.send-btn.hot{background:var(--sig);color:var(--on-sig);border-color:var(--sig)}
+.bulk{position:sticky;bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--s2);border:1px solid var(--line);border-radius:12px;box-shadow:var(--lift)}
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50;animation:fade .2s}
+.modal{width:min(760px,100%);max-height:92%;overflow-y:auto;background:var(--s1);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:24px;display:flex;flex-direction:column;gap:18px;animation:rise .24s ease}
+@media (min-width:720px){.scrim{align-items:center;padding:24px}.modal{border-radius:18px}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:var(--lift);z-index:60;animation:rise .2s}
+/* auth / setup */
+.auth{display:flex;min-height:100%;width:100%}
+.auth-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:48px 24px}
+.auth-aside{flex:1;margin:16px 16px 16px 0;border-radius:22px;background:radial-gradient(120% 90% at 20% 0%,#ffb070 0%,#ff9138 38%,#d9601a 100%);color:#000;display:flex;flex-direction:column;justify-content:center;padding:64px;gap:24px;position:relative;overflow:hidden}
+.auth-aside.quiet{background:var(--s1);color:var(--ink);border:1px solid var(--line2)}
+.stepper{display:flex;align-items:flex-start;width:min(560px,100%)}
+.stepper .s{display:flex;flex-direction:column;align-items:center;gap:10px;width:80px;flex:none}
+.stepper .c{width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-family:"Martian Mono",monospace;font-size:13px;background:var(--s2);color:var(--muted)}
+.stepper .s.cur .c{background:var(--sig);color:var(--on-sig);box-shadow:0 0 24px rgba(255,145,56,.35)}
+.stepper .s.done .c{background:var(--ink);color:var(--bg)}
+.stepper .ln{flex:1;height:1px;background:var(--line);margin:16px -24px 0}
+.stepper .ln.done{background:var(--ink)}
+.setup-card{width:min(640px,100%);padding:32px;display:flex;flex-direction:column;gap:24px;border-color:var(--line)}
+.src{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--bg)}
+
+.page.wide{max-width:1200px}
+.hrow{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:10px;cursor:pointer}
+.hrow:hover{background:var(--s2)}
+.hq{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-scrim{align-items:stretch!important;justify-content:flex-end!important;padding:0!important}
+.drawer{width:min(460px,100%);height:100%;background:var(--s1);border-left:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:14px;animation:slidein .24s ease}
+@keyframes slidein{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi{padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+.kpi-v{font-size:32px;line-height:38px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.insight{display:flex;align-items:center;gap:14px;padding:16px 18px;flex-wrap:wrap}
+.charts{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.chart{padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}
+.ch-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.donut{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.donut svg{width:150px;height:150px;flex:none}
+.seg-arc{transition:stroke-width .15s}.seg-arc:hover{stroke-width:22}
+.dn-big{font:600 24px Outfit,sans-serif;fill:var(--ink)}.dn-sub{font:500 10px 'Martian Mono',monospace;fill:var(--muted);letter-spacing:.06em}
+.legend{display:flex;flex-direction:column;gap:8px;flex:1;min-width:180px;font-size:14px}
+.lg{display:flex;align-items:center;gap:10px}.sw{width:10px;height:10px;border-radius:3px;flex:none}
+.hbars{display:flex;flex-direction:column;gap:10px}
+.hb-top{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:5px}
+.hb-track{height:6px;border-radius:999px;background:var(--s3);overflow:hidden}.hb-track i{display:block;height:100%;border-radius:999px}
+.hb:hover .hb-track i{filter:brightness(1.2)}
+.colchart,.linechart{width:100%;height:auto;overflow:visible}
+.ax{font:500 10px 'Martian Mono',monospace;fill:var(--muted)}.ax-val{font:500 11px 'Martian Mono',monospace;fill:var(--ink)}
+.colg:hover rect{filter:brightness(1.2)}
+.funnel{display:flex;flex-direction:column;gap:12px}
+.fn{display:grid;grid-template-columns:1fr;gap:5px}.fn-l{display:flex;justify-content:space-between;font-size:14px}
+.fn-track{height:10px;border-radius:999px;background:var(--s3);overflow:hidden}.fn-track i{display:block;height:100%;border-radius:999px}
+.fn-c{font-size:12px}
+.gap{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2);flex-wrap:wrap}
+.fine{padding:14px 18px}.fine summary{cursor:pointer}
+.summary{display:flex;align-items:center;gap:18px;padding:16px 20px;flex-wrap:wrap}
+.srcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.src-card{padding:18px;display:flex;flex-direction:column;gap:12px;min-height:250px}
+.src-card.soon{border-style:dashed;background:transparent}
+.set-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
+.set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:20px}
+.set-a{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:8px;border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;text-align:left;white-space:nowrap}
+.set-a.on{background:var(--s3);color:var(--ink)}
+.set-body{display:flex;flex-direction:column;gap:14px;max-width:760px;min-width:0}
+.sset{padding:22px;display:flex;flex-direction:column;gap:16px}
+.sset-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.rows{display:flex;flex-direction:column}
+.srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2);font-size:14px;flex-wrap:wrap}
+.rows .srow:first-child{border-top:0}
+.note{padding:12px 14px;border-radius:10px;background:var(--s2);font-size:14px}
+.bill-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.spark{display:flex;align-items:flex-end;gap:6px;height:44px;margin:10px 0 6px}.spark i{flex:1;background:var(--s3);border-radius:3px}
+.packs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pack{padding:16px;display:flex;flex-direction:column;gap:2px;align-items:flex-start;cursor:pointer;color:var(--ink);text-align:left}
+.pack.on{border-color:var(--sig)}
+.code{margin:0;padding:14px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font:12px/1.6 'Martian Mono',monospace;color:var(--ink2);overflow-x:auto}
+.steps{display:flex;flex-direction:column;gap:12px}
+.rail-step{display:flex;gap:12px;align-items:flex-start}
+.rail-dot{width:22px;height:22px;border-radius:999px;flex:none;display:inline-flex;align-items:center;justify-content:center;font:500 11px 'Martian Mono',monospace;color:var(--muted);margin-top:1px}
+.rail-dot.done{background:var(--livebg);color:var(--live)}.rail-dot.done svg{width:12px;height:12px}.rail-dot.cur{border:2px solid var(--sig);color:var(--sig)}.rail-dot.todo{border:1px solid var(--line)}
+
+.lead-h{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.stage{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px}
+.st-i{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line2);font-size:13px;color:var(--muted);white-space:nowrap}
+.st-d{width:8px;height:8px;border-radius:999px;border:1.5px solid var(--dim)}
+.st-i.done{color:var(--ink)}.st-i.done .st-d{background:var(--live);border-color:var(--live)}
+.st-i.cur{color:var(--ink);border-color:var(--sig)}.st-i.cur .st-d{border-color:var(--sig);background:var(--sig)}
+.lead-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.lead-main,.lead-side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.pathline{display:flex;align-items:center;gap:0;flex-wrap:wrap;row-gap:14px}
+.pl-node{display:flex;align-items:center;gap:10px;min-width:0}
+.pl-edge{flex:1;min-width:28px;height:2px;background:linear-gradient(90deg,var(--live),var(--sig));margin:0 12px;border-radius:2px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-top:1px solid var(--line2)}.kv span:last-child{text-align:right}
+.ct{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line2)}
+.ct-i{width:34px;height:34px;border-radius:9px;background:var(--s2);display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--muted)}
+.ct-v{font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.feed{display:flex;flex-direction:column}
+.fi{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line2)}
+.fi-dot{width:10px;height:10px;border-radius:999px;flex:none;margin-top:6px}
+.fi-b{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.fi-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fi-pl{font-size:13px;font-weight:600}
+.inv-grid{display:grid;grid-template-columns:1fr 150px;gap:10px}
+.grid2>*,.grid3>*,.inv-grid>*,label{min-width:0}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* responsive */
+@media (max-width:1099px){
+  .lead-grid{grid-template-columns:1fr}
+  .lead-side{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .set-layout{grid-template-columns:1fr;gap:16px}
+  .set-nav{flex-direction:row;overflow-x:auto;position:static}
+  .c5,.c6,.c7{grid-column:span 12}
+  .packs{grid-template-columns:repeat(2,1fr)}
+  .setup-layout{grid-template-columns:1fr}
+  .rail{display:none}
+  .setup-mini{display:flex}
+  .side{width:72px;padding:20px 10px;gap:14px}
+  .side .brand span,.side .search-btn span,.side .nav-a span:not(.icon),.side .nav-g .lbl,.side .wallet .lbl,.side .wallet a,.side .cnt{display:none}
+  .side .user div{display:none!important}
+  .side .nav-a{justify-content:center;padding:0}
+  .side .search-btn{justify-content:center;padding:0}
+  .side .wallet{padding:10px;align-items:center}
+  .page{padding:20px 28px 40px}
+  .rcard{grid-template-columns:1.3fr 1.3fr auto;}
+  .rcard .pathcol{display:none}
+}
+@media (max-width:719px){
+  /* bottom bar always at the bottom */
+  .app{min-height:100vh;min-height:100dvh}
+  .main{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+  .bottombar{margin-top:auto}
+  /* thumb-sized targets, no iOS zoom */
+  .btn-sm{min-height:40px}
+  .chip{height:36px}
+  .icon-btn{width:40px;height:40px}
+  .input input,.input select,textarea,.composer textarea{font-size:16px}
+  .filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+  .filters .fsearch{min-width:220px}
+  .inv-grid{grid-template-columns:1fr 120px}
+  /* shorter sign-up: no testimonial on setup steps */
+  .auth-aside.quiet{display:none}
+  .auth-main{padding:32px 16px 24px}
+  .auth-aside{min-height:0;padding:24px}
+  .auth-aside p{font-size:16px!important}
+  /* chat: more width for cards */
+  .agent{gap:10px}.agent>.av{width:28px!important;height:28px!important;font-size:12px!important}
+  .qcard{padding:18px 16px}
+  .qcard>div:first-child>.small{display:none}
+  .opt{min-height:52px}
+  .set-a{height:44px}
+  .page.lead{gap:18px}
+
+  .lead-side{grid-template-columns:1fr}
+  .lead-h .pills{width:100%}.lead-h .pills .btn-primary{flex:1}
+  .pl-edge{display:none}.pathline{flex-direction:column;align-items:flex-start}
+  .fi-top .small[style*='margin-left']{margin-left:0!important}
+  .kpis{grid-template-columns:1fr}
+  .kpi-v{font-size:26px}
+  .drawer{border-left:0}
+  .app{flex-direction:column}
+  .side{display:none}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg);z-index:10}
+  .bottombar{display:grid;grid-template-columns:repeat(5,1fr);position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line2);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+  .bottombar button{height:56px;border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;cursor:pointer}
+  .bottombar button.on{color:var(--sig-ink)}
+  .main{height:auto;flex:1}
+  .page{padding:16px 16px 24px;gap:22px}
+  .h1{font-size:24px;line-height:30px}
+  .rcard{grid-template-columns:1fr;gap:12px}
+  .rcard .actions{justify-content:flex-start}
+  .grid2,.grid3,.opts.two{grid-template-columns:1fr}
+  .auth{flex-direction:column}.auth-aside{margin:0 16px 16px;padding:32px 24px;min-height:260px}
+  .auth-aside svg{display:none}
+  .setup-card{padding:22px}
+  .bubble-user{max-width:100%}
+  .composer{position:static}
+  .bulk{position:static}
+  .stepper .s{width:64px}
+  .src .small{display:none}
+  .src{gap:10px}
+}
+@media (max-width:899px){
+  /* phone + tablet portrait: tables become stacked cards */
+  .tbl{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:14px 16px!important;min-width:0!important;min-height:0!important}
+  .tbl.head{display:none!important}
+  .tbl>*{flex:0 1 auto;min-width:0;max-width:100%}
+  .tbl>*:first-child:not(.opt){flex:1 1 100%}
+  .tbl>.opt:first-child{order:-1}
+  .tbl>.opt:first-child+*{flex:1 1 calc(100% - 40px)}
+  .tbl .qsel,.tbl .send-btn{margin-left:auto}
+  .tbl-wrap{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<div id="root"></div>
+<script>
+(function(){
+const I = {
+  check:'<svg class="ic" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>',
+  arrow:'<svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back:'<svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  chev:'<svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  chevr:'<svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  spark:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
+  send:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  clip:'<svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5l-8.5 8.5a5 5 0 01-7-7l9-9a3.5 3.5 0 015 5l-9 9a2 2 0 01-3-3l8-8"/></svg>',
+  plan:'<svg class="ic" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+  filter:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
+  search:'<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>',
+  globe:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>',
+  mail:'<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+  eye:'<svg class="ic" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  bolt:'<svg class="ic" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+  plus:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  up:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>',
+  sun:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon:'<svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg>',
+  today:'<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 13h5l2 3h4l2-3h5"/></svg>',
+  grid:'<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>',
+  planner:'<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>',
+  intro:'<svg class="ic" viewBox="0 0 24 24"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>',
+  pulse:'<svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
+  people:'<svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M21.5 19c0-2.6-1.8-4.5-4.5-4.5"/></svg>',
+  team:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5V13M12 13l-5.5 4M12 13l5.5 4"/></svg>',
+  settings:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+  more:'<svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>',
+  x:'<svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  copy:'<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 011-1h10"/></svg>',
+  pencil:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/></svg>'
+};
+const ok = '<span class="ok">'+I.check.replace('class="ic"','class="ic" style="width:11px;height:11px;stroke-width:2.4"')+'</span>';
+const av = (n,s=36)=>`<span class="av" style="width:${s}px;height:${s}px">${n.split(' ').slice(0,2).map(w=>w[0]).join('')}</span>`;
+const zav = ()=>`<span class="av" style="width:36px;height:36px;background:var(--ink);color:var(--bg);font-size:15px">Z</span>`;
+const W = {direct:['b-direct','Direct'],warm:['b-warm','Warm'],weak:['b-weak','Weak'],out:['b-out','Outside']};
+const badge = w=>`<span class="badge ${W[w][0]}">${W[w][1]}</span>`;
+
+const PATHS = [
+  {co:'Nimbly Health',who:'Priya Raman · CFO',w:'direct',bridge:'Karthik Rao',brole:'Lead investor · met Mar 2026',why:'Series B, ₹85 Cr · 11 days ago',path:'You → Karthik → Priya · 1 step',status:'Reply came in',q:'Strong',src:'Deep research #12',upd:'14 min',hot:true},
+  {co:'Fleetwise',who:'Arjun Nair · Founder',w:'direct',bridge:'Meera Iyer',brole:'Co-invested with you · replied 2 wks ago',why:'Series A, ₹40 Cr · 3 weeks ago',path:'You → Meera → Arjun · 1 step',status:'Asked · waiting',q:'Strong',src:'Deep research #12',upd:'1 h'},
+  {co:'Loomcraft',who:'Divya S · CFO',w:'warm',bridge:'Sanjay Kulkarni',brole:'Same board · IIM-A batchmate',why:'Hiring a Head of Finance',path:'You → Sanjay → Divya · 1 step',status:'Expiring in 18 h',q:'Good',src:'Search',upd:'2 d',hot:true},
+  {co:'Kwikpay',who:'Rahul Verma · Founder',w:'warm',bridge:'Anita Desai',brole:'Teammate’s contact · anonymised',why:'Runway ~12 mo · Series A 2025',path:'Teammate → Anita → Rahul · 2 steps',status:'Saved',q:'Good',src:'Pasted list',upd:'3 d'},
+  {co:'Orbital Labs',who:'Neha Gupta · CFO',w:'weak',bridge:'Vikram Shah',brole:'Shared school · no recent contact',why:'Series B, ₹120 Cr · 6 days ago',path:'You → Vikram → Neha · 1 step',status:'Saved',q:'Weak',src:'Deep research #12',upd:'5 d'},
+  {co:'Saltwater Foods',who:'Ramesh P · Promoter',w:'out',bridge:'—',brole:'No bridge yet · watching',why:'₹180 Cr revenue · no raise in 5 yrs',path:'Outside your network',status:'Watching',q:'—',src:'Pasted list',upd:'1 wk'}
+];
+
+const S = {
+  route:'signin', theme:null, q1:2, q2:new Set([1,2]), clarify:2, traceOpen:{setup:true,research:false},
+  mode:'search', view:'card', tab:'desk', wtab:'paths', qmenu:null, sel:new Set([0,1,2]), modal:null, toast:null, playbook:2, chan:'email', to:'bridge', sent:new Set(), setupChoice:null
+};
+const NAV = [
+  {g:'Workspace',items:[['today','Today',I.today,'4'],['discover','Discover',I.spark,''],['workspace','Workspace',I.grid,''],['planner','S-Planner',I.planner,''],['intros','Intros',I.intro,'3']]},
+  {g:'Insights',items:[['health','Network Health',I.pulse,'']]},
+  {g:'Data',items:[['contacts','Network Contacts',I.people,''],['team','Team & Connectors',I.team,''],['settings','Settings',I.settings,'']]}
+];
+const active = r => ({research:'discover','research-prompt':'discover','research-guided':'discover','research-results':'discover',path:'discover',empty:'workspace',agent:'setup'})[r] || r;
+
+function go(r){ S.route=r; S.qmenu=null; S.modal=null; location.hash=r; window.scrollTo(0,0); render(); }
+function toast(t){ S.toast=t; render(); setTimeout(()=>{S.toast=null;render();},2600); }
+function setTheme(t){ S.theme=t; if(t) document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme'); try{localStorage.setItem('zeyhi-theme',t||'');}catch(e){} render(); }
+function isLight(){ const a=document.documentElement.getAttribute('data-theme'); if(a) return a==='light'; return matchMedia('(prefers-color-scheme: light)').matches; }
+
+/* ---------- shell ---------- */
+function sidebar(){
+  const a = active(S.route);
+  const setupItem = S.setup.done?'':`<button class="nav-a ${S.route==='agent'?'on':''}" data-go="agent" title="Setup"><span class="icon">${I.check}</span><span>Setup</span><span class="cnt" style="color:var(--sig-ink)">${setupCount()}/6</span></button>`;
+  const groups = NAV.map(g=>`<div class="nav-g"><span class="lbl">${g.g}</span>${g.items.map(([k,l,ic,c])=>`<button class="nav-a ${a===k?'on':''}" data-go="${k}" title="${l}"><span class="icon">${ic}</span><span>${l}</span>${c?`<span class="cnt" style="color:${k==='today'?'var(--sig-ink)':'var(--muted)'}">${c}</span>`:''}</button>`).join('')}</div>`).join('');
+  return `<aside class="side">
+    <div class="brand"><span class="zmark">Z</span><span style="font-size:17px;font-weight:600;flex:1">Zeyhi</span></div>
+    <button class="search-btn"><span class="icon">${I.search}</span><span style="flex:1">Search</span><span class="kbd">⌘K</span></button>
+    ${setupItem?`<div class="nav-g">${setupItem}</div>`:''}
+    ${groups}
+    <div class="wallet"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="mono" style="font-size:22px;line-height:24px;font-weight:500">25</span><span class="lbl">Credits</span></div><div class="bar" style="width:100%"><i style="width:50%"></i></div><a class="small" data-go="settings" style="cursor:pointer">Top up · 1 credit per search</a></div>
+    <div class="user">${av('Aadarsh K S',30)}<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">Aadarsh K S</span><span class="small" style="font-size:11px">Zeyhi Org</span></div><button class="icon-btn" data-theme-toggle title="Switch theme">${isLight()?I.moon:I.sun}</button></div>
+  </aside>`;
+}
+function topbar(title){
+  return `<div class="topbar"><div class="brand"><span class="zmark">Z</span><span style="font-weight:600">${title}</span></div><div style="display:flex;gap:4px"><button class="icon-btn">${I.search}</button><button class="icon-btn" data-theme-toggle>${isLight()?I.moon:I.sun}</button></div></div>`;
+}
+function bottombar(){
+  const a = active(S.route);
+  const items=[['today','Today',I.today],['discover','Discover',I.spark],['workspace','Workspace',I.grid],['intros','Intros',I.intro],['more','More',I.more]];
+  return `<nav class="bottombar">${items.map(([k,l,ic])=>`<button class="${a===k?'on':''}" data-go="${k==='more'?'settings':k}">${ic}<span>${l}</span></button>`).join('')}</nav>`;
+}
+function shell(title, inner, opts={}){
+  return `<div class="app">${sidebar()}<div class="main">${topbar(title)}${opts.banner||''}${inner}${bottombar()}</div></div>`;
+}
+function composer(ph, plan){
+  return `<div class="composer"><textarea id="composer-${S.route}" rows="1" placeholder="${ph}"></textarea><div class="crow"><button class="btn btn-ghost btn-sm" style="border-radius:8px;${plan?'background:var(--s3);color:var(--ink)':''}">${I.plan}Plan first</button><span class="small" style="color:var(--dim)">research only, no asks drafted</span><span style="flex:1"></span><button class="icon-btn">${I.clip}</button><button class="btn btn-primary" style="width:40px;height:40px;padding:0" data-send>${I.send}</button></div></div>`;
+}
+function trace(key,label,steps){
+  const open=S.traceOpen[key];
+  return `<div><button class="trace-toggle" data-trace="${key}">${label}${open?I.chev:I.chevr}</button>${open?`<div class="trace">${steps.map(s=>`<div class="st">${ok}<span>${s}</span></div>`).join('')}</div>`:''}</div>`;
+}
+const agent = inner=>`<div class="agent">${zav()}<div class="body">${inner}</div></div>`;
+
+/* ---------- auth + setup ---------- */
+function signin(){
+  return `<div class="auth"><div class="auth-main">
+    <div style="display:flex;align-items:center;gap:12px"><span class="zmark" style="width:40px;height:40px;font-size:22px">Z</span><span style="font-size:34px;font-weight:700;letter-spacing:-.02em">Zeyhi</span></div>
+    <div style="text-align:center;display:flex;flex-direction:column;gap:6px"><h1 class="h1" style="font-size:24px">Sign in to Zeyhi</h1><span class="sub">Welcome back. Your warm paths are waiting.</span></div>
+    <div style="width:min(440px,100%);display:flex;flex-direction:column;gap:20px">
+      <div class="grid2" style="gap:12px"><button class="btn btn-secondary" data-go="today"><b style="color:#4285f4">G</b>Google</button><button class="btn btn-secondary" data-go="today"><span style="width:14px;height:14px;background:linear-gradient(135deg,#f25022 50%,#7fba00 50%);border-radius:2px"></span>Microsoft</button></div>
+      <div style="display:flex;align-items:center;gap:14px"><i style="flex:1;height:1px;background:var(--line2)"></i><span class="lbl">or</span><i style="flex:1;height:1px;background:var(--line2)"></i></div>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Work email</span><div class="input"><input id="email" type="email" placeholder="you@yourfirm.com">${I.mail}</div></label>
+      <button class="btn btn-primary" data-go="setup1">Continue ${I.arrow}</button>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px;border-radius:12px;background:var(--s1)"><a style="font-size:14px;color:var(--sig-ink);font-weight:500">Use a passkey instead</a><span class="small">New to Zeyhi? <a data-go="setup1" style="color:var(--sig-ink);font-weight:500;cursor:pointer">Create your firm</a></span></div>
+    </div></div>
+    <div class="auth-aside"><span class="lbl" style="color:rgba(0,0,0,.6)">Meet your warm-path engineer</span><span style="font-size:44px;line-height:1;font-weight:700;color:rgba(0,0,0,.35)">”</span><p style="margin:0;font-size:clamp(18px,2vw,24px);line-height:1.5;max-width:520px">We stopped blasting 400 founders a week. Zeyhi showed us the <b>12 we could actually reach</b> through people who’d vouch for us, and 5 of them took the meeting.</p><div style="display:flex;align-items:center;gap:14px"><span class="av" style="width:48px;height:48px;background:rgba(0,0,0,.18);color:#000;font-size:15px">RM</span><div><div style="font-weight:600">Rohan Mehta</div><div style="font-size:13px;color:rgba(0,0,0,.65)">Partner · Venture debt fund, Bangalore</div></div></div>
+    <svg viewBox="0 0 520 300" style="position:absolute;right:24px;bottom:0;width:min(520px,80%);height:auto;fill:none;stroke:rgba(0,0,0,.55);stroke-width:2"><path d="M40 250 C 120 250, 140 120, 230 120 S 340 60, 420 60 S 480 40, 500 30" stroke-dasharray="6 8"/><path d="M40 250 C 160 250, 200 190, 300 180 S 440 150, 500 90" stroke="rgba(0,0,0,.9)" stroke-width="3"/><circle cx="40" cy="250" r="12" fill="#000"/><circle cx="300" cy="180" r="10" fill="#000"/><circle cx="500" cy="90" r="14" fill="#000"/><text x="62" y="256" font-family="Martian Mono,monospace" font-size="12" fill="rgba(0,0,0,.8)">you</text><text x="250" y="212" font-family="Martian Mono,monospace" font-size="12" fill="rgba(0,0,0,.8)">bridge · direct</text><text x="440" y="120" font-family="Martian Mono,monospace" font-size="12" fill="rgba(0,0,0,.8)">target</text></svg>
+    </div></div>`;
+}
+function stepper(cur){
+  const L=['Firm','You','Network'];
+  return `<div class="stepper">${L.map((l,i)=>{const n=i+1;const cls=n<cur?'done':n===cur?'cur':'';return `<div class="s ${cls}"><span class="c">${n<cur?I.check:n}</span><span style="font-size:14px;font-weight:500;color:${n<=cur?'var(--ink)':'var(--muted)'}">${l}</span></div>${n<3?`<i class="ln ${n<cur?'done':''}"></i>`:''}`;}).join('')}</div>`;
+}
+function setupPage(cur,inner,next,nextLabel,back,quote,name,role){
+  return `<div class="auth"><div class="auth-main" style="justify-content:flex-start;padding-top:56px">
+    <div style="display:flex;align-items:center;gap:12px"><span class="zmark" style="width:36px;height:36px;font-size:19px">Z</span><span style="font-size:30px;font-weight:700;letter-spacing:-.02em">Zeyhi</span></div>
+    ${stepper(cur)}
+    <section class="card setup-card">${inner}<div style="display:flex;gap:12px">${back?`<button class="btn btn-secondary" data-go="${back}" style="width:120px">${I.back}Back</button>`:''}<button class="btn btn-primary" style="flex:1" data-go="${next}">${nextLabel}</button></div></section>
+    <span class="small" style="color:var(--dim);text-align:center">Nothing is sent to anyone during setup. Zeyhi never sends messages for you.</span>
+  </div><div class="auth-aside quiet"><span class="lbl" style="align-self:center">Warm paths, not spray and pray</span><span style="font-size:44px;line-height:1;font-weight:700;color:var(--dim)">”</span><p style="margin:0;font-size:clamp(18px,1.8vw,22px);line-height:1.55">${quote}</p><div style="display:flex;align-items:center;gap:14px">${av(name,48)}<div><div style="font-weight:600">${name}</div><div class="small">${role}</div></div></div></div></div>`;
+}
+const fld = (l,inner)=>`<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">${l}</span>${inner}</label>`;
+function setup1(){
+  const pb=[['I invest','VC · founders'],['I lend','Venture debt · CFOs'],['I advise','IB · promoters']];
+  return setupPage(1,`<div style="display:flex;flex-direction:column;gap:8px"><h1 class="h1" style="font-size:26px">Your firm</h1><span class="sub">Your website is enough. We read it to learn who you back, lend to or advise, so the first warm paths are already in your language.</span></div>
+  ${fld('Firm website',`<div class="input">${I.globe}<input id="site" value="zeyhiventures.com"></div>`)}
+  <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:14px;font-weight:500">What do you do with an introduction?</span><div class="grid3" style="gap:10px">${pb.map((p,i)=>`<button class="opt ${S.playbook===i+1?'on':''}" data-pb="${i+1}" style="flex-direction:column;align-items:flex-start;gap:2px"><span>${p[0]}</span><span class="small" style="font-size:12px">${p[1]}</span></button>`).join('')}</div></div>`,
+  'setup2',"Let's go",null,'Dude, we’ve burned through so many outbound tools. Zeyhi is the first one that <b>tells us who can vouch for us</b> before we write a word.','Gary Nair','Director · Machinery Partners');
+}
+function setup2(){
+  return setupPage(2,`<div style="display:flex;flex-direction:column;gap:8px"><h1 class="h1" style="font-size:26px">Now, a bit about you</h1><span class="sub">Your name goes on every ask. Teammates you invite pool their networks with yours. Bridges stay anonymous until they approve.</span></div>
+  <div class="grid2">${fld('First name','<div class="input"><input id="fn" value="Aadarsh"></div>')}${fld('Last name','<div class="input"><input id="ln" value="K S"></div>')}</div>
+  ${fld('Your role',`<div class="input"><select id="role"><option>Partner</option><option>Principal</option><option>Associate</option><option>Managing Director</option><option>Founder</option></select></div>`)}
+  <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px"><div><div style="font-size:14px;font-weight:500">Invite teammates</div><div class="small" style="font-size:12px">Optional. You can do this later.</div></div><button class="btn btn-ghost btn-sm">${I.plus}Add</button></div><div class="inv-grid"><div class="input"><input id="inv" placeholder="colleague@yourfirm.com"></div><div class="input"><select id="invrole"><option>Member</option><option>Admin</option></select></div></div></div>`,
+  'setup3','Continue','setup1','Zeyhi is <b>more useful than our last analyst</b>. It knew which of our LPs sat on the board of the company we wanted.','Ryan Bhat','Principal · Series A fund');
+}
+function setup3(){
+  const rows=[['LinkedIn','1,214 connections · shared companies & schools','on'],['Google Workspace','Gmail threads + Calendar meetings · last 24 months','on'],['WhatsApp','Contacts you message · number needed for asks','off'],['HubSpot','Deals, owners, stages · two-way sync','off']];
+  return setupPage(3,`<div style="display:flex;flex-direction:column;gap:8px"><h1 class="h1" style="font-size:26px">Your network</h1><span class="sub">Warm paths come from real relationships. Connect where your conversations live. We read who you actually know, never what you said.</span></div>
+  <div style="display:flex;flex-direction:column;gap:10px">${rows.map(r=>`<div class="src">${av(r[0])}<div style="flex:1;min-width:0"><div style="font-weight:500">${r[0]}</div><div class="small" style="font-size:12px">${r[1]}</div></div>${r[2]==='on'?`<span class="badge b-direct">${I.check}Connected</span>`:`<button class="btn btn-secondary btn-sm" data-toast="Connecting ${r[0]}… (prototype)">Connect</button>`}</div>`).join('')}</div>
+  <div style="display:flex;align-items:center;gap:14px"><span class="small" style="flex:1">Pool with teammates’ networks (bridges anonymised until they approve)</span><button class="toggle on" data-flip></button></div>`,
+  'agent',"Let's start",'setup2','We installed Zeyhi on a Tuesday. By Thursday it had found <b>a lead investor who owed us a favour</b> for a deal we’d chased for months.','Adam Fernandes','MD · Mid-market IB');
+}
+function qcard(n,total,q,sub,opts,sel,key,cta,ctaGo,multi){
+  return `<div class="qcard"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="lbl">${multi?'Question':'Question'} ${n} of ${total}${multi?' · pick any':''}</span><span class="small">Press <span class="kbd">1</span>–<span class="kbd">${opts.length+1}</span> to pick</span></div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="h2">${q}</span><span class="sub">${sub}</span></div>
+  <div class="opts ${multi?'two':''}">${opts.map((o,i)=>{const on=multi?sel.has(i+1):sel===i+1;return `<button class="opt ${on?'on':''}" data-q="${key}" data-i="${i+1}"><span class="n">${i+1}</span><span style="flex:1">${o}</span>${on?I.check:''}</button>`;}).join('')}<button class="opt dashed" data-toast="Type your answer in the composer below"><span class="n">${opts.length+1}</span><span style="flex:1">Other — I’ll type it</span></button></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="small">Your answer shapes the brief. Change it later in Settings.</span><button class="btn btn-primary btn-sm" style="height:40px;padding:0 20px;font-size:14px" data-go="${ctaGo}">${cta}${I.arrow}</button></div></div>`;
+}
+/* ---------- Setup agent flow ---------- */
+const SQ = [
+  {key:'window', q:'When a company raises, how soon do you want to be in the room?', sub:'This sets the why-now window I watch for and how urgent the asks sound.', opts:['Within 2 weeks of the announcement','Within 60 days, after the dust settles','Only when they start looking for debt'], multi:false, ack:a=>`Got it. I’ll watch for rounds and treat <b>${a.toLowerCase()}</b> as the moment to ask.`},
+  {key:'reach', q:'Who do you want to reach at the company?', sub:'I pick bridges by who they can actually get you to. Pick all that apply.', opts:['CFO','Founder / CEO','Head of Finance','Promoter / MD'], multi:true, ack:a=>`${a} first. I’ll skip anyone else at the company unless you ask.`},
+  {key:'bridges', q:'Whose word carries most with your targets?', sub:'I’ll ask these bridges first and rank their paths higher.', opts:['Lead investor on the round','Co-investors you’ve done deals with','CFO advisors & CAs','Lawyers & bankers','Portfolio founders','Former colleagues'], multi:true, ack:a=>`Noted. ${a} go to the top of every path.`},
+  {key:'tone', q:'How should your asks sound?', sub:'I draft every message in this voice. You always edit before anything goes out.', opts:['Short and direct: two lines, no fluff','Warm and personal: mentions how you know them','Formal: full context, for IB and promoters'], multi:false, ack:a=>`Last one done. I’ll write <b>${a.split(':')[0].toLowerCase()}</b>.`}
+];
+S.setup = {step:0, ans:[new Set([2]),new Set([1,2]),new Set([1,3]),new Set([1])], other:['','','',''], exitOpen:false, run:0, done:false, exited:false, editing:null};
+let runTimer=null;
+const RUN_STEPS=['Pulled <b>47 rounds</b> from the last 60 days that match your playbook','Matched CFOs and founders against 318 people you’ve met: <b>13 reachable</b>','Ranked bridges: lead investors and CFO advisors first','Drafted one ask per bridge, in your short-and-direct voice'];
+function ansText(i){ const q=SQ[i]; const a=[...S.setup.ans[i]].sort().map(n=>q.opts[n-1]); if(S.setup.other[i]) a.push(S.setup.other[i]); if(!a.length) return 'Skipped'; return a.length>2?a.slice(0,-1).join(', ')+' and '+a.at(-1):a.join(' and '); }
+function setupCount(){ const s=S.setup; return 3+(s.step>=4?1:0)+(s.step>=6?2:0); }
+function setupRail(){
+  const s=S.setup; const n=setupCount();
+  const items=[['Your firm','zeyhiventures.com · I lend','done'],['About you','Aadarsh K S · Partner','done'],['Your network','LinkedIn + Google connected','done'],['Your playbook',s.step>=4?'4 answers saved':`Question ${Math.min(s.step+1,4)} of 4`,s.step>=4?'done':'cur'],['First warm paths',s.step>=6?'13 found · 3 to ask first':s.step===5?'Running…':'Free during setup',s.step>=6?'done':s.step>=4?'cur':''],['You’re in','Land on Today',s.step>=6?'done':'']];
+  return `<aside class="rail"><div class="card" style="padding:20px;display:flex;flex-direction:column;gap:16px;position:sticky;top:20px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">Setup</span><span class="data">${n} of 6</span></div>
+    <div class="bar"><i style="width:${n/6*100}%;transition:width .4s ease"></i></div>
+    <div style="display:flex;flex-direction:column;gap:14px">${items.map(it=>`<div style="display:flex;gap:12px;align-items:flex-start"><span style="width:20px;height:20px;border-radius:999px;flex:none;display:inline-flex;align-items:center;justify-content:center;margin-top:1px;${it[2]==='done'?'background:var(--livebg);color:var(--live)':it[2]==='cur'?'border:2px solid var(--sig)':'border:1px solid var(--line)'}">${it[2]==='done'?I.check.replace('class="ic"','class="ic" style="width:12px;height:12px;stroke-width:2.4"'):''}</span><div style="display:flex;flex-direction:column;min-width:0"><span style="font-size:14px;font-weight:500;color:${it[2]?'var(--ink)':'var(--muted)'}">${it[0]}</span><span class="small" style="font-size:12px">${it[1]}</span></div></div>`).join('')}</div>
+    ${s.step<6?`<div style="border-top:1px solid var(--line2);padding-top:14px;display:flex;flex-direction:column;gap:6px"><button class="btn btn-ghost btn-sm" style="padding:0;justify-content:flex-start" data-sexit>Exit setup</button><span class="small" style="font-size:12px">Answers are saved. Pick up from the banner on Today.</span></div>`:''}
+  </div></aside>`;
+}
+function setupQ(i){
+  const q=SQ[i]; const sel=S.setup.ans[i];
+  return `<div class="qcard" id="qcard"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="lbl">Question ${i+1} of 4${q.multi?' · pick any':''}</span><span class="small">Press <span class="kbd">1</span>–<span class="kbd">${q.opts.length+1}</span>${q.multi?' to toggle':' to pick'} · <span class="kbd">⏎</span> continue</span></div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="h2">${q.q}</span><span class="sub">${q.sub}</span></div>
+  <div class="opts ${q.opts.length>4?'two':''}">${q.opts.map((o,k)=>{const on=sel.has(k+1);return `<button class="opt ${on?'on':''}" data-sopt="${k+1}"><span class="n">${k+1}</span><span style="flex:1">${o}</span>${on?I.check:''}</button>`;}).join('')}<button class="opt dashed" data-sother><span class="n">${q.opts.length+1}</span><span style="flex:1">Other — type it below</span></button></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="display:flex;gap:4px">${i>0?`<button class="btn btn-ghost btn-sm" data-sback>${I.back}Back</button>`:''}<button class="btn btn-ghost btn-sm" data-sskip>Skip</button></div><button class="btn btn-primary btn-sm" style="height:40px;padding:0 20px;font-size:14px" data-snext ${sel.size||S.setup.other[i]?'':'disabled style="opacity:.5"'}>${i===3?'Finish playbook':'Continue'}${I.arrow}</button></div></div>`;
+}
+function agentSetup(){
+  const s=S.setup;
+  let flow=`<div class="bubble-user">Hi Zeyhi. I’m Aadarsh, Partner at Zeyhi Ventures. Help me get set up.</div>
+    ${agent(trace('setup','Thought & used 3 tools · 42s',['Read <b>zeyhiventures.com</b>: venture debt, ₹10–60 Cr cheques, Series A–C India','Scanned <b>1,214 LinkedIn connections</b> and 24 months of Gmail + Calendar: 318 people you’ve actually met','Found <b>41 bridges</b> who are one step from a funded company in your sweet spot'])+`<span class="msg">Hey Aadarsh. I don’t blast lists. I find the people who can vouch for you and tell you what to send them. Your strongest bridges right now: <b>lead VCs on 9 recent rounds</b> and <b>4 CFO advisors</b> you’ve met this year. Four quick questions, then I’ll find your first warm paths.</span>`)}`;
+  for(let i=0;i<Math.min(s.step,4);i++){
+    flow+=`<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="bubble-user" style="font-size:15px">${ansText(i)}</div><button class="btn btn-ghost btn-sm" style="height:24px;font-size:12px" data-sedit="${i}">Edit answer</button></div>`;
+    flow+=agent(`<span class="msg">${SQ[i].ack(ansText(i))}</span>`);
+  }
+  if(s.step<4){ flow+=agent(setupQ(s.step)); }
+  if(s.step>=4){
+    const rows=[['Why now',ansText(0)],['Who to reach',ansText(1)],['Trusted bridges',ansText(2)],['Voice',ansText(3).split(':')[0]],['Ticket','₹10–60 Cr venture debt · Series A–C · India'],['Caps','10 asks per run · 5 per bridge a month']];
+    flow+=agent(`<span class="msg">Here’s your playbook. It shapes every search, every ranking and every draft. You can change any line later in Settings.</span>
+    <div class="card" style="overflow:hidden;max-width:760px"><div style="display:flex;justify-content:space-between;padding:14px 18px"><span class="lbl">Your playbook</span><span class="badge b-direct">${I.check}Saved</span></div>${rows.map((r,k)=>`<div style="display:flex;gap:16px;padding:12px 18px;border-top:1px solid var(--line2);align-items:center;flex-wrap:wrap"><span class="small" style="width:130px;flex:none">${r[0]}</span><span style="flex:1;min-width:180px;font-size:14px">${r[1]}</span>${k<4?`<button class="btn btn-ghost btn-sm" style="height:28px" data-sedit="${k}">Edit</button>`:''}</div>`).join('')}</div>
+    ${s.step===4?`<span class="msg">Want me to find your first warm paths now? It’s on me: no credits during setup, and nothing is sent to anyone.</span>
+    <div class="pills"><button class="btn btn-primary" data-srun>${I.spark}Find my first warm paths</button><button class="btn btn-secondary" data-go="research-prompt" data-sfinish>I have a prompt</button><button class="btn btn-ghost" data-sfinish data-go="today">Skip, take me to Today</button></div>`:''}`);
+  }
+  if(s.step>=5){
+    flow+=`<div class="bubble-user">Find my first warm paths</div>`;
+    const steps=RUN_STEPS.slice(0,s.step>=6?4:s.run);
+    const running=s.step===5;
+    flow+=agent(`<div><span class="trace-toggle">${running?'Working… '+(s.run)+' of 4':'Thought & used 4 tools · 38s'}${I.chev}</span><div class="trace">${steps.map(t=>`<div class="st">${ok}<span>${t}</span></div>`).join('')}${running&&s.run<4?`<div class="st"><span class="run"></span><span>${RUN_STEPS[s.run].replace(/<\/?b>/g,'')}</span></div>`:''}</div></div>`+
+    (s.step>=6?`<span class="msg"><b>13 warm paths.</b> These three have a Direct bridge, someone you’ve met who replied this quarter. I’d ask them first.</span>
+    <div class="card tbl-wrap" style="max-width:760px">${PATHS.slice(0,3).map(p=>`<div class="tbl" style="grid-template-columns:1.4fr 1.3fr .8fr;min-width:0"><div style="min-width:0"><div style="font-weight:500">${p.co}</div><div class="small" style="font-size:12px">${p.who}</div></div><div style="display:flex;align-items:center;gap:8px;min-width:0">${av(p.bridge,24)}<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.bridge}</span></div>${badge(p.w)}</div>`).join('')}</div>
+    <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;max-width:760px;border-color:var(--live);animation:rise .3s ease both">
+      <div style="display:flex;align-items:center;gap:12px"><span class="av" style="width:40px;height:40px;background:var(--livebg);color:var(--live)">${I.check}</span><div><div class="h2" style="font-size:18px">You’re set up</div><span class="small">Setup took 3 minutes. Here’s what’s ready.</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">${['Playbook saved: venture debt, CFO and founder, lead investors first','13 warm paths saved to Workspace','Weekly watch: every Monday 6:00 am, new rounds in your window','3 asks drafted and waiting on Today'].map(t=>`<div style="display:flex;gap:10px"><span style="color:var(--live)">${I.check}</span><span>${t}</span></div>`).join('')}</div>
+      <div class="pills"><button class="btn btn-primary" data-sfinish data-go="today">Go to Today ${I.arrow}</button><button class="btn btn-secondary" data-sfinish data-act="send:0">Review the first ask</button></div>
+    </div>`:''));
+  }
+  const exitPop = s.exitOpen?`<div class="card" style="position:absolute;right:0;top:48px;width:min(340px,calc(100vw - 32px));padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--lift);z-index:20;animation:rise .2s ease"><span style="font-weight:600">Leave setup for now?</span><span class="small">Your ${Math.min(s.step,4)} answer${Math.min(s.step,4)===1?'':'s'} ${Math.min(s.step,4)===1?'is':'are'} saved. A banner on Today brings you back to ${s.step<4?'question '+(s.step+1):'your first warm paths'}.</span><div class="pills"><button class="btn btn-primary btn-sm" data-sexitgo>Exit to Today</button><button class="btn btn-secondary btn-sm" data-sexit>Keep going</button></div></div>`:'';
+  const n=setupCount();
+  const inner=`<div class="page chat" style="max-width:1200px">
+    <div class="phead" style="position:relative"><div style="display:flex;align-items:center;gap:12px"><h1 class="h1" style="font-size:24px">Setup</h1><span class="small">${s.step>=6?'Complete':s.step>=4?'Almost done':'About '+(4-s.step)+' min left'}</span></div>${s.step<6?`<button class="btn btn-secondary btn-sm" data-sexit>Exit setup</button>`:`<button class="btn btn-secondary btn-sm" data-sfinish data-go="today">Go to Today</button>`}${exitPop}</div>
+    <div class="setup-mini"><div class="bar" style="flex:1"><i style="width:${n/6*100}%"></i></div><span class="data">${n} of 6</span></div>
+    <div class="setup-layout"><div style="display:flex;flex-direction:column;gap:20px;min-width:0"><div class="chat-flow">${flow}</div>${composer(s.step<4?'Or answer in your own words':'Ask anything, or type “run it”')}</div>${setupRail()}</div>
+  </div>`;
+  return shell('Setup',inner);
+}
+function setupBanner(){
+  const s=S.setup; if(s.done||s.step===0&&!s.exited) return '';
+  const left = s.step<4?`${4-s.step} question${4-s.step===1?'':'s'} left, then your first warm paths.`:'One step left: find your first warm paths (free).';
+  return `<div class="banner"><span>Setup is ${setupCount()} of 6 done. ${left}</span><button class="btn btn-sm" style="background:var(--ink);color:var(--bg)" data-go="agent">Continue setup ${I.arrow}</button></div>`;
+}
+function advanceSetup(){ const s=S.setup; if(s.editingBack){ s.editingBack=false; s.step=s.returnTo; } else s.step++; S.scrollBottom=true; render(); }
+function startRun(){
+  S.setup.step=5; S.setup.run=0; S.scrollBottom=true; render();
+  clearInterval(runTimer);
+  runTimer=setInterval(()=>{ S.setup.run++; if(S.setup.run>=4){ clearInterval(runTimer); setTimeout(()=>{S.setup.step=6; S.scrollBottom=true; render();},500);} S.scrollBottom=true; render(); },750);
+}
+
+/* ---------- Today ---------- */
+function today(){
+  const T=[['Reply came in','Nimbly Health · 14 min ago',true,'Karthik said yes. He’ll forward your note to Priya at Nimbly Health','He asked for two lines and a mention of the ₹85 Cr round. The forwardable note is ready.',[['Review note & mark forwarded','send:0'],['Open path','path']]],
+   ['Approve a teammate’s ask','Fleetwise · from Riya · 1 h ago',true,'Riya wants to use your bridge Meera Iyer for Fleetwise','Your name stays hidden until you approve. Meera has had 1 team ask this month (cap 5).',[['Approve','toast:Approved. Riya can ask Meera; your name stays hidden.'],['Decline','toast:Declined. Riya gets a note, not your name.'],['See draft','send:1']]],
+   ['Expiring in 18 h','Loomcraft · asked 2 d ago',false,'Sanjay hasn’t replied about Loomcraft. One nudge is allowed','Sent Thursday over WhatsApp. If it expires, the path returns to Warm; re-ask in 30 days.',[['Send the nudge','send:2'],['Let it expire','toast:Marked. The path returns to Warm when it expires.']]],
+   ['New warm paths','Weekly watch · 6:00 am',false,'Monday watch found 3 new targets with a Direct bridge','From “Raised in last 60 days” · 2 in fintech, 1 in logistics. No credits used yet.',[['See the 3','research-results'],['Save to Workspace','toast:3 paths saved to Workspace']]]];
+  const cards=T.map(t=>`<article class="card task"><span class="dot" style="background:${t[2]?'var(--sig)':'var(--dim)'};margin-top:9px"></span><div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:0"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="lbl">${t[0]}</span><span class="small" style="font-size:12px">${t[1]}</span></div><span style="font-size:17px;font-weight:600;letter-spacing:-.01em">${t[3]}</span><span class="sub">${t[4]}</span><div class="pills">${t[5].map((a,i)=>`<button class="btn btn-pill btn-sm ${i?'btn-secondary':'btn-primary'}" data-act="${a[1]}">${a[0]}</button>`).join('')}</div></div></article>`).join('');
+  const inner=`<div class="page"><div class="phead"><div class="tabs">${[['desk','My desk','4'],['team','Team',''],['activity','Activity','']].map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${t[2]?` <span class="data" style="color:var(--sig-ink)">${t[2]}</span>`:''}</button>`).join('')}</div><button class="btn btn-secondary btn-sm" style="height:38px">${I.filter}Filters <span class="data" style="color:var(--ink)">2</span></button></div>
+  <div><h1 class="h1">Good morning, Aadarsh</h1><span class="sub">4 things need you. Everything else is moving on its own.</span></div>
+  ${S.tab==='desk'?`<div style="display:flex;flex-direction:column;gap:10px">${cards}</div>`:S.tab==='team'?emptyCaught('Team is clear','Riya has 2 open asks, Vikram has 1. Nothing waits on you.'):activity()}
+  <div style="display:flex;gap:18px;flex-wrap:wrap"><span class="small"><span class="kbd">J</span> <span class="kbd">K</span> move</span><span class="small"><span class="kbd">A</span> approve</span><span class="small"><span class="kbd">R</span> reply</span><span class="small"><span class="kbd">S</span> snooze</span><span class="small"><span class="kbd">⌘K</span> anything</span></div></div>`;
+  return shell('Today',inner,{banner:setupBanner()});
+}
+function emptyCaught(t,s){ return `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:64px 0"><span class="av" style="width:64px;height:64px;background:var(--livebg);color:var(--live)">${I.check}</span><span class="h2" style="margin-top:8px">${t}</span><span class="sub">${s}</span><button class="btn btn-ghost" data-tab="activity">${I.eye}Show all activity</button></div>`; }
+function activity(){ const A=[['Karthik forwarded your note to Priya','14 min'],['Riya asked to use Meera Iyer (needs you)','1 h'],['Weekly watch ran: 3 new targets','6:00 am'],['Sanjay: ask sent over WhatsApp','Thu'],['Fleetwise saved to Workspace by Riya','Wed']]; return `<div class="card" style="overflow:hidden">${A.map(a=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line2);font-size:14px"><span>${a[0]}</span><span class="small">${a[1]}</span></div>`).join('')}</div>`; }
+
+/* ---------- Discover ---------- */
+function modeSeg(){ return `<div class="seg">${[['search','Search'],['research','Deep research'],['list','Pasted list']].map(m=>`<button class="${S.mode===m[0]?'on':''}" data-mode="${m[0]}">${m[1]}</button>`).join('')}</div>`; }
+function discover(){
+  const rows=PATHS.slice(0,4);
+  const cards=rows.map((p,i)=>`<article class="card rcard"><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:17px;font-weight:600">${p.co}</span><span class="small">${p.who}</span><span class="small" style="color:var(--ink);margin-top:4px">${p.why}</span></div><div style="display:flex;align-items:center;gap:12px">${av(p.bridge)}<div style="min-width:0"><div style="font-weight:500">${p.bridge}</div><div class="small" style="font-size:12px">${p.brole}</div></div></div><div class="pathcol" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">${badge(p.w)}<span class="small">${p.path}</span></div><div class="pills actions"><button class="btn btn-secondary btn-sm" style="height:38px" data-go="path" data-lead="${i}">See lead</button><button class="btn btn-primary btn-sm" style="height:38px" data-act="send:${i}">Ask ${p.bridge.split(' ')[0]}</button></div></article>`).join('');
+  const table=`<div class="card tbl-wrap">${pathTable(rows,false)}</div>`;
+  const inner=`<div class="page"><div class="phead"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 class="h1" style="font-size:24px">Discover</h1>${modeSeg()}</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${historyBtn()}<span class="small">Card</span><button class="toggle ${S.view==='table'?'on':''}" data-view></button><span class="small">Table</span></div></div>
+  <div class="input" style="height:60px;border-radius:14px;padding:0 20px;font-size:17px">${I.search}<input id="q" value="CFOs at Series B fintechs in Bangalore that raised in the last 60 days"><span class="kbd">⏎</span></div>
+  <div class="phead"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span class="h2">9 warm paths</span><span class="small">of 23 matches · 14 are outside your network</span></div><span class="small">Couldn’t verify <b style="color:var(--ink);font-weight:500">“raised in last 60 days”</b> for 4 targets · <a data-go="path" style="color:var(--sig-ink);cursor:pointer">see which</a></span></div>
+  ${S.view==='card'?`<div style="display:flex;flex-direction:column;gap:12px">${cards}</div>`:table}
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center"><button class="btn btn-secondary" data-toast="5 more paths loaded (prototype)">Show 5 more warm paths</button><span class="small">Watching the 14 outside your network. We’ll tell you when a bridge appears.</span></div></div>`;
+  return shell('Discover',inner);
+}
+function pathTable(rows,withSel){
+  const cols = withSel?'28px 2fr 1.6fr 0.9fr 1.3fr 1.1fr 1fr 0.6fr 44px':'2fr 1.6fr 1fr 2fr 110px';
+  const head = withSel?`<span></span><span class="lbl">Target</span><span class="lbl">Best path</span><span class="lbl">Warmth</span><span class="lbl">Status</span><span class="lbl">Quality of path</span><span class="lbl">Source</span><span class="lbl">Updated</span><span></span>`:`<span class="lbl">Target</span><span class="lbl">Best bridge</span><span class="lbl">Warmth</span><span class="lbl">Why now</span><span></span>`;
+  return `<div class="tbl head" style="grid-template-columns:${cols}">${head}</div>`+rows.map((p,i)=>{
+    const target=`<div style="min-width:0;cursor:pointer" data-go="path" data-lead="${i}"><div style="font-weight:500">${p.co}</div><div class="small" style="font-size:12px">${p.who}</div></div>`;
+    const bridge=`<div style="display:flex;align-items:center;gap:8px;min-width:0">${p.bridge==='—'?'':av(p.bridge,24)}<div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.bridge}</div>${withSel?`<div class="small" style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.path}</div>`:''}</div></div>`;
+    if(!withSel) return `<div class="tbl" style="grid-template-columns:${cols}">${target}${bridge}${badge(p.w)}<span class="small">${p.why}</span><a data-go="path" data-lead="${i}" class="small" style="color:var(--sig-ink);font-weight:500;cursor:pointer;text-align:right">See lead ${I.chevr}</a></div>`;
+    const sel=S.sel.has(i);
+    const qc={Strong:'var(--live)',Good:'var(--sig)',Weak:'var(--muted)','—':'var(--dim)'}[p.q];
+    const menu=S.qmenu===i?`<div class="menu">${['Strong','Good','Weak','Invalid'].map(q=>`<button data-qset="${i}:${q}"><span class="dot" style="background:${{Strong:'var(--live)',Good:'var(--sig)',Weak:'var(--muted)',Invalid:'var(--alert)'}[q]}"></span>${q}${p.q===q?'<span style="margin-left:auto">'+I.check+'</span>':''}</button>`).join('')}<div class="small" style="padding:6px 10px 4px;border-top:1px solid var(--line)">Your rating is visible to the whole team</div></div>`:'';
+    return `<div class="tbl ${sel?'sel':''}" style="grid-template-columns:${cols}"><button class="opt" data-sel="${i}" style="min-height:0;width:18px;height:18px;padding:0;border-radius:4px;justify-content:center;${sel?'background:var(--sig);border-color:var(--sig);color:var(--on-sig)':''}">${sel?I.check.replace('class="ic"','class="ic" style="width:11px;height:11px;stroke-width:2.6"'):''}</button>${target}${bridge}${badge(p.w)}<span style="display:flex;align-items:center;gap:8px;font-size:13px">${p.hot?'<span class="dot" style="background:var(--sig)"></span>':''}${p.status}</span><div class="qsel"><button class="chip" data-qmenu="${i}" style="height:28px"><span class="dot" style="background:${qc}"></span>${p.q}${I.chev}</button>${menu}</div><span class="small">${p.src}</span><span class="data">${p.upd}</span><button class="send-btn ${p.hot?'hot':''}" data-act="send:${i}" title="Send message">${I.send.replace('M12 19V5M6 11l6-6 6 6','M5 12h14M13 6l6 6-6 6')}</button></div>`;
+  }).join('');
+}
+
+/* ---------- Deep research ---------- */
+function rhead(){ return `<div class="phead"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 class="h1" style="font-size:24px">Discover</h1>${modeSeg()}</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="small">3 credits per run · charged only when you run</span>${historyBtn()}</div></div>`; }
+function research(){
+  const recent=[['Series A–C India · raised in last 60 days · CFO or founder','run #12 · 13 warm paths · Mon'],['B2B SaaS, ₹20–80 Cr revenue · 4+ yrs since last raise · promoter','run #11 · 7 warm paths · 2 wks ago'],['Kochi + Bangalore logistics · Series A · founder','run #9 · 4 warm paths · Sep 2']];
+  const help=(ic,t,b,p,go)=>`<div class="card help" data-go="${go}"><div style="display:flex;align-items:center;gap:12px"><span class="av" style="width:40px;height:40px;border-radius:10px;background:var(--s2)">${ic}</span><span style="font-size:17px;font-weight:600">${t}</span></div><span class="sub" style="font-size:14px;line-height:21px">${b}</span><div class="prompt-pill"><span style="color:var(--sig)">${I.spark}</span><span style="flex:1">${p}</span>${I.arrow}</div></div>`;
+  const inner=`<div class="page chat">${rhead()}<div class="chat-flow">
+    ${agent(`<span class="msg">What are we looking for today? Paste a prompt if you already have one; I’ll clarify a couple of things and run it. If not, I’ll ask five short questions and build the brief with you.</span>`)}
+    <div class="grid2" style="max-width:900px">${help(I.clip,'I have a prompt','Paste anything: a thesis note, a Slack message, a list of criteria. I turn it into a brief you can edit, ask at most two clarifying questions, then run.','Paste my prompt','research-prompt')}${help(I.spark,'Build it with me','Five questions: stage, sectors, geography, who you want to reach, and why now. The brief builds as you answer. About a minute.','Ask me step by step','research-guided')}</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:900px"><span class="lbl">Try</span>${['Founders who raised a seed in Kochi this year','CFOs at Series B fintechs with 12 mo runway','Promoters of ₹100–500 Cr SaaS, no raise in 4 yrs'].map(t=>`<button class="chip" data-go="research-prompt">${t}</button>`).join('')}</div>
+    <div class="card" style="overflow:hidden;max-width:900px"><div style="display:flex;justify-content:space-between;padding:12px 16px"><span class="lbl">Recent briefs</span><a data-go="workspace" class="small" style="cursor:pointer">All runs</a></div>${recent.map(r=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line2);font-size:14px;flex-wrap:wrap"><span style="flex:1;min-width:200px">${r[0]}</span><span class="small">${r[1]}</span><button class="btn btn-ghost btn-sm" style="color:var(--sig-ink)" data-go="research-results">Run again</button></div>`).join('')}</div>
+  </div>${composer('Paste your prompt here, or type "guide me"')}</div>`;
+  return shell('Discover',inner);
+}
+function researchPrompt(){
+  const f=(l,v,miss)=>`<div class="field ${miss?'miss':''}"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">${l}</span>${miss?'':`<span style="color:var(--dim)">${I.pencil}</span>`}</div><span style="font-size:14px">${v}</span></div>`;
+  const inner=`<div class="page chat">${rhead()}<div class="chat-flow">
+    <div class="bubble-user">need CFOs / founders at indian startups that raised recently (series A to C), fintech + b2b saas, ideally someone we know can intro — venture debt 10–60cr. skip live mandates</div>
+    ${agent(trace('prompt','Thought & used 2 tools · 4s',['Read the prompt and mapped it to the six fields of a brief','Checked against your playbook (venture debt) and your live mandates (4 excluded)'])+`<span class="msg">Got it. Here’s how I read it. Fix anything that’s off. One field is missing and I have two quick questions, then we run.</span>
+    <div class="card" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;max-width:900px"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span class="lbl">Your brief</span><span class="small">Click any field to edit</span></div><div class="grid3">${f('Stage','Series A, B, C')}${f('Sectors','Fintech · B2B SaaS')}${f('Geography','India')}${f('Who to reach','CFO, or founder if no CFO')}${f('Why now','Raised recently — how recent? ↓',true)}${f('Exclude','4 companies with a live mandate')}</div><span class="small">Bridges ranked from lead VCs and CFO advisors first (your playbook). ₹10–60 Cr phrases the ask; it doesn’t filter.</span></div>
+    ${qcard(1,2,'“Raised recently” — how recent?','This is the why-now window. Shorter windows mean fewer, hotter targets.',['Last 30 days','Last 60 days','Last 90 days','Since January 2026'],S.clarify,'clarify','Run · 3 credits','research-results')}`)}
+  </div>${composer('Or just type the fix: "make it 90 days and add healthtech"')}</div>`;
+  return shell('Discover',inner);
+}
+function researchGuided(){
+  const sofar=['Venture debt · ₹10–60 Cr','Series A, B, C'].map(t=>`<span class="chip on" style="height:30px"><span style="color:var(--live)">${I.check}</span>${t}</span>`).join('')+['Sectors','Geography','Why now'].map(t=>`<span class="chip" style="height:30px;border-style:dashed;color:var(--dim)">${t}</span>`).join('');
+  const inner=`<div class="page chat">${rhead()}<div class="chat-flow">
+    <div class="bubble-user">Build it with me</div>
+    ${agent(`<span class="msg">Five questions, one at a time. I’ll build the brief as we go and show you the estimated matches and cost before anything runs.</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="lbl">So far</span>${sofar}</div>
+    ${qcard(3,5,'Which sectors are in your thesis?','Pick everything you’d lend to this quarter. I’ll weight bridges who’ve worked in these sectors higher.',['Fintech','B2B SaaS','Healthtech','Logistics & supply chain','Consumer brands','Climate & energy'],S.q2,'q2','Continue','research-results',true)}
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--s1);border:1px solid var(--line2);max-width:760px"><span style="color:var(--muted)">${I.eye}</span><span class="small">Live estimate with what you’ve picked so far: <b style="color:var(--ink);font-weight:500">≈ 40–60 matches, 10–14 with a warm path</b> · 3 credits when you run.</span></div>`)}
+  </div>${composer('Or answer in words: "fintech and saas, skip consumer"')}</div>`;
+  return shell('Discover',inner);
+}
+function researchResults(){
+  const rows=PATHS.slice(0,4);
+  const inner=`<div class="page chat">${rhead()}<div class="chat-flow">
+    <div class="bubble-user">Find Series A–C companies in India that raised in the last 60 days where I can reach the CFO or founder through someone who’d vouch for me.</div>
+    ${agent(trace('research','Thought & used 4 tools · 1m 12s',['Pulled <b>47 rounds</b> from the last 60 days (Tracxn, VCCircle, MCA filings)','Matched founders and CFOs against your network: <b>13 reachable</b>, 34 outside','Ranked bridges by relationship strength: met in person, replied in last 90 days, shared board','Drafted what to send each bridge, and what the bridge should say to the target'])+`<span class="msg">13 of the 47 are reachable through people who know you. The strongest three are <b>Direct</b>: a bridge you’ve met and who replied to you this quarter. I’d ask these three first; each bridge only gets one ask.</span>
+    <div class="card tbl-wrap" style="max-width:960px">${pathTable(rows,false)}<div style="display:flex;justify-content:space-between;gap:10px;padding:12px 16px;border-top:1px solid var(--line2);flex-wrap:wrap"><span class="small">9 with a path · 4 outside your network (watching)</span><a data-go="workspace" class="small" style="color:var(--sig-ink);font-weight:500;cursor:pointer">Open all 13 in Workspace</a></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:760px"><span class="lbl">What I’d send Karthik (bridge → Nimbly Health)</span><div class="quote">Karthik — quick one. Nimbly just closed their B and Priya (CFO) will be modelling the next 18 months about now. Would you forward a two-line note to her? Happy to leave it if the timing’s off.</div><span class="small">One message to the bridge. The bridge gets a forwardable note for Priya. You never message Priya cold.</span></div>
+    <div class="pills"><button class="btn btn-primary btn-sm" style="height:40px;padding:0 18px;font-size:14px" data-act="send:0">Review 3 asks ${I.arrow}</button><button class="btn btn-secondary btn-sm" style="height:40px;padding:0 18px;font-size:14px" data-toast="13 paths saved to Workspace">Save all 13 to Workspace</button><button class="btn btn-secondary btn-sm" style="height:40px;padding:0 18px;font-size:14px" data-toast="Weekly watch set: every Monday 6:00 am">${I.bolt}Watch this every Monday</button><button class="btn btn-ghost btn-sm" data-go="research-prompt">Change filters</button></div>`)}
+  </div>${composer('Refine: "only fintech", "exclude live mandates", "show the 34 outside my network"…')}</div>`;
+  return shell('Discover',inner);
+}
+
+/* ---------- Workspace ---------- */
+function workspace(){
+  const n=S.sel.size;
+  const inner=`<div class="page"><div class="phead"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 class="h1" style="font-size:24px">Workspace</h1><span class="chip" style="cursor:default"><span class="dot" style="background:var(--live)"></span>HubSpot · synced 4 min ago · 3 updates</span></div><div class="tabs">${[['paths','Paths','214'],['campaigns','Campaigns','3'],['intros','Requested intros','']].map(t=>`<button class="tab ${S.wtab===t[0]?'on':''}" data-wtab="${t[0]}">${t[1]}${t[2]?` <span class="data">${t[2]}</span>`:''}</button>`).join('')}</div></div>
+  <div class="filters"><div class="input fsearch" style="max-width:380px;height:40px">${I.search}<input id="wq" placeholder="Search leads or companies"><span class="kbd">⌘K</span></div>${['Warmth','Status','Quality','Source','Owner','Campaign'].map(c=>`<button class="chip">${c}${I.chev}</button>`).join('')}<button class="chip on"><span class="dot" style="background:var(--sig)"></span>Changed in CRM · 3</button></div>
+  ${S.wtab==='paths'?`<div class="card tbl-wrap" style="overflow:visible"><div class="tbl-wrap">${pathTable(PATHS,true)}</div></div>
+  ${n?`<div class="bulk"><span style="font-weight:600;font-size:14px;margin-right:6px">${n} selected</span><button class="btn btn-primary btn-sm" data-toast="Added to campaign Q3 Enterprise Outreach">Add to campaign ${I.chev}</button><button class="btn btn-secondary btn-sm" data-act="send:0">Send messages</button><button class="btn btn-secondary btn-sm" data-toast="${n} asks queued for bridge approval">Request intros</button><button class="btn btn-secondary btn-sm" data-toast="Pushed to S-Planner">Push to S-Planner</button><button class="btn btn-secondary btn-sm" data-toast="Synced to HubSpot">Sync to CRM</button><button class="btn btn-ghost btn-sm" data-toast="CSV export started">Export</button><button class="btn btn-ghost btn-sm" data-clearsel>Clear</button></div>`:''}`:
+  S.wtab==='campaigns'?campaigns():intros(true)}</div>`;
+  return shell('Workspace',inner);
+}
+function campaigns(){
+  const C=[['Q3 Enterprise Outreach','48 paths · 31 bridged','22 asked','6 meetings','HubSpot · Enterprise Q3','Aadarsh'],['Bangalore Fintech Founders','30 · 19','12','4','—','Riya'],['Kochi expansion signals','14 · 9','5','1','HubSpot · Kochi','Vikram']];
+  return `<div class="card tbl-wrap"><div class="tbl head" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1.4fr 1fr"><span class="lbl">Campaign</span><span class="lbl">Paths · bridged</span><span class="lbl">Asked</span><span class="lbl">Meetings</span><span class="lbl">CRM sequence</span><span class="lbl">Owner</span></div>${C.map(c=>`<div class="tbl" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1.4fr 1fr"><span style="font-weight:500">${c[0]}</span><span class="data">${c[1]}</span><span class="data">${c[2]}</span><span class="data" style="color:var(--live)">${c[3]}</span><span class="small">${c[4]}</span><span style="display:flex;align-items:center;gap:8px">${av(c[5],24)}${c[5]}</span></div>`).join('')}</div>
+  <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span class="lbl">Updates from HubSpot · 3</span><button class="btn btn-ghost btn-sm" data-toast="All 3 applied">Apply all</button></div>${[['Nimbly Health moved to “Term sheet” by Riya','Apply'],['Fleetwise owner changed to Vikram','Apply'],['Loomcraft closed-lost in CRM','Add as signal']].map(u=>`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px"><span class="dot" style="background:var(--sig)"></span><span style="flex:1;min-width:200px">${u[0]}</span><button class="btn btn-secondary btn-sm" data-toast="Applied">${u[1]}</button><button class="btn btn-ghost btn-sm" data-toast="Ignored">Ignore</button></div>`).join('')}</div>`;
+}
+function intros(embedded){
+  const R=[['Nimbly Health','Karthik Rao → Priya Raman','Forwarded','b-direct','14 min'],['Fleetwise','Meera Iyer → Arjun Nair','Waiting on bridge','b-warm','1 h'],['Loomcraft','Sanjay Kulkarni → Divya S','Expiring 18 h','b-alert','2 d'],['Kwikpay','Anita Desai → Rahul Verma','Draft','b-weak','3 d'],['Tessel AI','Ashish M → Kavya R','Declined · re-ask in 30 d','b-weak','1 wk']];
+  const t=`<div class="card tbl-wrap"><div class="tbl head" style="grid-template-columns:1.6fr 2fr 1.4fr .6fr 120px"><span class="lbl">Target</span><span class="lbl">Bridge → target</span><span class="lbl">Stage</span><span class="lbl">Updated</span><span></span></div>${R.map((r,i)=>`<div class="tbl" style="grid-template-columns:1.6fr 2fr 1.4fr .6fr 120px"><span style="font-weight:500">${r[0]}</span><span class="small" style="color:var(--ink)">${r[1]}</span><span class="badge ${r[3]}">${r[2]}</span><span class="data">${r[4]}</span><button class="btn btn-secondary btn-sm" data-act="send:${Math.min(i,3)}">Open</button></div>`).join('')}</div>`;
+  if(embedded) return t;
+  return shell('Intros',`<div class="page"><div class="phead"><div><h1 class="h1" style="font-size:24px">Requested intros</h1><span class="sub">Every ask, who it went through, and where it stands. Arjun · 2 of 10 asks this run.</span></div></div>${t}</div>`);
+}
+
+/* ---------- Path detail ---------- */
+/* ---------- Send modal ---------- */
+function sendModal(i){
+  const p=PATHS[i]; const toBridge=S.to==='bridge'; const first=p.bridge.split(' ')[0]; const tfirst=p.who.split(' ')[0];
+  const drafts={bridge:{email:[`Quick one about ${p.co}`,`Hi ${first},\n\n${p.co} just ${p.why.toLowerCase().includes('series')?'closed their round':'popped up on our radar'} and ${tfirst} will be looking at the next 18 months about now. We’ve done venture debt for three companies in your portfolio.\n\nWould you forward the two-line note below to ${tfirst}? Happy to leave it if the timing’s off.\n\n— Aadarsh`],whatsapp:['',`${first} — quick one. ${p.co} just closed their round and ${tfirst} will be modelling the next 18 months about now. Would you forward a two-line note to ${tfirst.split(' ')[0]}? Happy to leave it if the timing’s off.`],linkedin:['',`Hi ${first}, hope the quarter’s going well. Would you be open to forwarding a short note to ${tfirst} at ${p.co}? We’ve worked with three of your portfolio on debt. No pressure if the timing’s off.`]},
+    target:{email:[`Congrats on the round · ${p.co}`,`Hi ${tfirst},\n\nCongrats on the round. ${first} suggested I reach out. We provide ₹10–60 Cr venture debt to Series A–C companies and have worked with three of ${first}’s portfolio.\n\nIf extending runway without dilution is on your list this quarter, happy to share how we structure it.\n\n— Aadarsh`],whatsapp:['',`Hi ${tfirst}, ${first} suggested I say hello. Congrats on the round. If non-dilutive runway is on your list this quarter, happy to share how we structure venture debt.`],linkedin:['',`Hi ${tfirst}, congrats on the round. ${first} mentioned you. We do ₹10–60 Cr venture debt for Series A–C; happy to share how we structure it if useful.`]}};
+  const d=drafts[S.to][S.chan];
+  const chan=[['email','Email','address on file'],['linkedin','LinkedIn','profile linked'],['whatsapp','WhatsApp',i===2?'number on file':'no number · Enrich 1 credit']];
+  return `<div class="scrim" data-close><div class="modal" data-stop>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><div class="lbl">Send message · ${p.co}</div><h2 class="h2">${toBridge?`Ask ${p.bridge} to open the door`:`Message ${p.who.split(' ·')[0]} directly`}</h2></div><button class="icon-btn" data-close>${I.x}</button></div>
+    <div class="grid2" style="gap:10px">${[['bridge',`To the bridge · ${p.bridge}`,'Recommended · L2 forward · ~22% meet'],['target',`To the target · ${p.who.split(' ·')[0]}`,'Cold · L1 · ~3% meet']].map(t=>`<button class="opt ${S.to===t[0]?'on':''}" data-to="${t[0]}" style="flex-direction:column;align-items:flex-start;gap:2px"><span>${t[1]}</span><span class="small" style="font-size:12px">${t[2]}</span></button>`).join('')}</div>
+    <div class="seg" style="align-self:flex-start">${chan.map(c=>`<button class="${S.chan===c[0]?'on':''}" data-chan="${c[0]}"><span class="dot" style="background:${c[2].startsWith('no')?'var(--alert)':'var(--live)'};display:inline-block;margin-right:8px"></span>${c[1]}</button>`).join('')}</div>
+    <span class="small">${chan.find(c=>c[0]===S.chan)[2]} · variables: <span class="kbd">{first name}</span> <span class="kbd">{company}</span> <span class="kbd">{why now}</span> <span class="kbd">{my calendar}</span></span>
+    ${S.chan==='email'?`<div class="input"><input id="subj" value="${d[0]}"></div>`:''}
+    <textarea class="ta" id="draft" rows="7">${d[1]}</textarea>
+    <div class="pills"><button class="chip" data-toast="Regenerated">Regenerate</button><button class="chip" data-toast="Shortened">Shorter</button><button class="chip" data-toast="Made more formal">More formal</button></div>
+    <div class="pills" style="align-items:center"><button class="btn btn-primary" data-copy>${I.copy}Copy message</button><button class="btn btn-secondary" data-toast="Opened in ${S.chan==='email'?'Gmail':S.chan==='linkedin'?'LinkedIn':'WhatsApp'} (prototype)">Insert into ${S.chan==='email'?'Gmail':S.chan==='linkedin'?'LinkedIn':'WhatsApp'}</button><button class="btn btn-ghost" data-sent="${i}">I already sent it</button></div>
+    <span class="small" style="color:var(--dim)">Zeyhi never sends. You copy or insert, and mark it sent. Aadarsh · 2 of 10 asks this run · this bridge: 0 of 5 this month.</span>
+  </div></div>`;
+}
+
+/* ---------- Settings / misc ---------- */
+function simple(title,sub,body){ return shell(title,`<div class="page"><div><h1 class="h1" style="font-size:24px">${title}</h1><span class="sub">${sub}</span></div>${body}</div>`); }
+function planner(){ const cols=[['Saved','12'],['Asked','6'],['Bridge said yes','3'],['Meeting','2'],['Term sheet','1']]; return simple('S-Planner','Pipeline by stage. Cards move when a bridge replies or a CRM stage changes.',`<div class="tbl-wrap"><div style="display:grid;grid-template-columns:repeat(5,minmax(180px,1fr));gap:12px;min-width:920px">${cols.map((c,ci)=>`<div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px;min-height:220px"><div style="display:flex;justify-content:space-between"><span class="lbl">${c[0]}</span><span class="data">${c[1]}</span></div>${PATHS.slice(ci,ci+2).map(p=>`<div style="padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line2)"><div style="font-weight:500;font-size:14px">${p.co}</div><div class="small" style="font-size:12px">${p.bridge==='—'?'No bridge yet':'via '+p.bridge}</div></div>`).join('')}</div>`).join('')}</div></div>`); }
+function contacts(){ return simple('Network Contacts','Everyone Zeyhi knows you know, and how strong the relationship is.',`<div class="card tbl-wrap"><div class="tbl head" style="grid-template-columns:2fr 1.6fr 1fr 1fr"><span class="lbl">Person</span><span class="lbl">Affiliation</span><span class="lbl">Strength</span><span class="lbl">Last contact</span></div>${[['Karthik Rao','Lead investor · Nimbly, Fleetwise','direct','2 wks'],['Meera Iyer','Co-investor · 3 deals','direct','2 wks'],['Sanjay Kulkarni','Board · Loomcraft','warm','2 d'],['Anita Desai','Riya’s contact','warm','—'],['Vikram Shah','IIM-A · no recent contact','weak','14 mo']].map(c=>`<div class="tbl" style="grid-template-columns:2fr 1.6fr 1fr 1fr"><span style="display:flex;align-items:center;gap:10px">${av(c[0],28)}<span style="font-weight:500">${c[0]}</span></span><span class="small">${c[1]}</span>${badge(c[2])}<span class="data">${c[3]}</span></div>`).join('')}</div>`); }
+function emptyState(){ const banner=`<div class="banner"><span>Setup is still in progress. Zeyhi has read your firm, but WhatsApp and HubSpot aren’t connected yet.</span><button class="btn btn-sm" style="background:var(--ink);color:var(--bg)" data-go="agent">Continue setup ${I.arrow}</button></div>`;
+  return shell('Workspace',`<div class="page"><div><h1 class="h1" style="font-size:24px">Workspace</h1><span class="sub">Every warm path you’ve saved, with who’s asking whom.</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:24px"><span class="av" style="width:56px;height:56px;border-radius:14px;background:var(--s1);color:var(--sig);border:1px solid var(--line2)">${I.up}</span><span class="h2" style="margin-top:8px">No paths yet</span><span class="sub" style="max-width:520px">Paths land here when you save them from Discover, or when a weekly watch finds something new.</span></div><div class="grid2" style="max-width:900px;align-self:center;width:100%">${[[I.up,'Bring a list','A CRM export, a Tracxn list, or 30 company names. Zeyhi finds the bridge for each one before you spend anything.','Find bridges for my list','discover'],[I.search,'Describe the deal','“CFOs at Series B fintechs that raised in the last 60 days.” Zeyhi researches, ranks bridges and drafts the asks.','Find the right people','research']].map(h=>`<div class="card help" data-go="${h[4]}"><div style="display:flex;align-items:center;gap:12px"><span class="av" style="width:40px;height:40px;border-radius:10px;background:var(--s2)">${h[0]}</span><span style="font-size:17px;font-weight:600">${h[1]}</span></div><span class="sub" style="font-size:14px;line-height:21px">${h[2]}</span><div class="prompt-pill"><span style="color:var(--sig)">${I.spark}</span><span style="flex:1">${h[3]}</span>${I.arrow}</div></div>`).join('')}</div></div>`,{banner}); }
+
+/* ================= PASS 4: history, settings, data sources, analytics, team ================= */
+I.clock='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+I.star='<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>';
+I.list='<svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>';
+I.key='<svg class="ic" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg>';
+I.shield='<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>';
+I.card='<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>';
+I.user='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+I.plug='<svg class="ic" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 01-12 0zM12 18v4"/></svg>';
+I.dots='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>';
+I.chat='<svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>';
+I.cal='<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+I.brain='<svg class="ic" viewBox="0 0 24 24"><path d="M9 4a3 3 0 00-3 3 3 3 0 00-2 5 3 3 0 002 5 3 3 0 006 1V5a3 3 0 00-3-1zM15 4a3 3 0 013 3 3 3 0 012 5 3 3 0 01-2 5 3 3 0 01-6 1"/></svg>';
+I.info='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>';
+I.dl='<svg class="ic" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>';
+
+Object.assign(S,{hist:false, hfilter:'all', hq:'', pinned:new Set([0,3]), stab:'account', nhTab:'me', mcp:false, share:true, why:false, memMenu:null, keys:[['Production','zk_live_••••8f2a','Aadarsh','Sep 12','2 h ago']]});
+NAV[2].items=[['contacts','Network Contacts',I.people,''],['team','Team & Connectors',I.team,''],['data','Data Sources',I.up,''],['settings','Settings',I.settings,'']];
+
+/* ---------- History ---------- */
+const HIST=(()=>{
+  const deep=['Series A–C India · raised in last 60 days · CFO or founder','B2B SaaS ₹20–80 Cr revenue · 4+ yrs since raise · promoter','Kochi + Bangalore logistics · Series A · founder','Fintech CFOs with 9–18 mo runway','Healthtech founders backed by Blume or Accel','Climate startups that raised a seed in 2026','D2C brands ₹50 Cr+ revenue, no institutional round','Portfolio companies of Stellaris hiring a CFO','Pune SaaS founders who spoke at SaaSBoomi','Series B edtech companies with a new CFO'];
+  const srch=['CFOs at Series B fintechs in Bangalore','Karthik Rao','founders of bengaluru b2b saas companies','Nimbly Health','Head of Finance Zerodha','Meera Iyer portfolio','Fleetwise founder','Series A logistics Chennai','Accel India partners','Loomcraft CFO','people who worked at Razorpay','IIM-A 2012 founders','Stellaris portfolio CFOs','fintech CFOs in Pune','Kwikpay','Orbital Labs','Sequoia Surge alumni founders','ex-Flipkart founders','CA firms Mumbai partners','Saltwater Foods promoter','Tessel AI','Zepto finance team','Chennai SaaS CFOs','Blume Ventures portfolio','3one4 Capital portfolio','HCLTech alumni founders','Antler India founders','Hyderabad healthtech founders','Series C CFOs India','Gurugram D2C founders'];
+  const lists=['Funded last 60 days (Tracxn export)','IB target list · Q4 mandates','VC thesis list · climate','SaaSBoomi 2026 attendees','Alumni · IIM-A 2008–2014'];
+  const when=['Today','Today','Yesterday','Yesterday','This week','This week','This week','Earlier','Earlier','Earlier'];
+  const out=[]; let t=0;
+  deep.forEach((q,i)=>out.push({k:'deep',q,paths:[13,7,4,9,6,3,5,2,4,6][i],asked:[3,1,0,2,0,0,1,0,0,1][i],cr:3,when:when[i],time:['9:42','8:10','6:31 pm','2:05 pm','Thu','Wed','Tue','Sep 18','Sep 12','Sep 3'][i]}));
+  srch.forEach((q,i)=>out.push({k:'search',q,paths:(i*7)%11,asked:i%9===0?1:0,cr:1,when:i<8?'Today':i<14?'Yesterday':i<22?'This week':'Earlier',time:i<8?(10-i)+':'+(10+i*5)%60:''}));
+  lists.forEach((q,i)=>out.push({k:'list',q,paths:[73,18,11,26,40][i],asked:[4,0,0,2,1][i],cr:[73,18,11,26,40][i],rows:[120,42,30,210,96][i],when:['Yesterday','This week','This week','Earlier','Earlier'][i],time:['4:12 pm','Wed','Tue','Sep 20','Sep 9'][i]}));
+  return out;
+})();
+const KIND={deep:['Deep research',I.spark],search:['Search',I.search],list:['Pasted list',I.list]};
+function historyBtn(){ return `<button class="btn btn-secondary btn-sm" data-hist style="height:38px">${I.clock}History <span class="data">${HIST.length}</span></button>`; }
+function historyDrawer(){
+  if(!S.hist) return '';
+  const f=S.hfilter, q=S.hq.toLowerCase();
+  const items=HIST.map((h,i)=>({...h,i})).filter(h=>(f==='all'||h.k===f)&&(!q||h.q.toLowerCase().includes(q)));
+  const counts={all:HIST.length,deep:HIST.filter(h=>h.k==='deep').length,search:HIST.filter(h=>h.k==='search').length,list:HIST.filter(h=>h.k==='list').length};
+  const row=h=>`<div class="hrow" data-hopen="${h.i}"><span class="av" style="width:32px;height:32px;border-radius:8px;background:var(--s2);color:${h.k==='deep'?'var(--sig)':'var(--muted)'}">${KIND[h.k][1]}</span><div style="flex:1;min-width:0"><div class="hq">${h.q}</div><div class="small" style="font-size:12px">${KIND[h.k][0]} · ${h.paths?`<b style="color:var(--ink);font-weight:500">${h.paths} warm path${h.paths===1?'':'s'}</b>`:'No warm paths'}${h.asked&&h.paths?` · ${h.asked} asked`:''}${h.rows?` · ${h.rows} rows`:''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="small" style="font-size:12px">${h.time||''}</span><button class="icon-btn" style="width:24px;height:24px;color:${S.pinned.has(h.i)?'var(--sig)':'var(--dim)'}" data-hpin="${h.i}" title="Pin">${I.star}</button></div></div>`;
+  const pinned=items.filter(h=>S.pinned.has(h.i));
+  const groups=['Today','Yesterday','This week','Earlier'].map(g=>[g,items.filter(h=>h.when===g&&!S.pinned.has(h.i))]).filter(g=>g[1].length);
+  return `<div class="scrim side-scrim" data-hclose><aside class="drawer" data-stop>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><h2 class="h2">History</h2><span class="small">Reopening a run is free for 24 h. Results are kept for 90 days.</span></div><button class="icon-btn" data-hclose>${I.x}</button></div>
+    <div class="input" style="height:42px">${I.search}<input id="hq" placeholder="Search your runs" value="${S.hq}"></div>
+    <div class="seg" style="align-self:flex-start">${[['all','All'],['deep','Deep research'],['search','Search'],['list','Lists']].map(t=>`<button class="${f===t[0]?'on':''}" data-hf="${t[0]}">${t[1]} <span class="data" style="font-size:11px">${counts[t[0]]}</span></button>`).join('')}</div>
+    <div style="display:flex;flex-direction:column;gap:18px;overflow-y:auto;flex:1;margin:0 -8px;padding:0 8px">
+      ${pinned.length?`<div><div class="lbl" style="margin-bottom:6px">Pinned</div>${pinned.map(row).join('')}</div>`:''}
+      ${groups.map(g=>`<div><div class="lbl" style="margin-bottom:6px">${g[0]}</div>${g[1].map(row).join('')}</div>`).join('')||`<div class="sub" style="text-align:center;padding:40px 0">No runs match “${S.hq}”.</div>`}
+    </div>
+    <div class="small" style="border-top:1px solid var(--line2);padding-top:12px">This month: 10 deep research · 30 searches · 5 lists · 45 credits of 50</div>
+  </aside></div>`;
+}
+
+/* ---------- charts ---------- */
+function donut(parts,total,center,sub){
+  const R=52,C=2*Math.PI*R; let off=0; const gap=2;
+  const segs=parts.map(p=>{const len=Math.max(p.v/total*C-gap,0.5); const s=`<circle r="${R}" cx="70" cy="70" fill="none" style="stroke:${p.c}" stroke-width="18" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)" class="seg-arc"><title>${p.l}: ${p.v.toLocaleString()} (${Math.round(p.v/total*100)}%)</title></circle>`; off+=p.v/total*C; return s;}).join('');
+  return `<div class="donut"><svg viewBox="0 0 140 140" role="img" aria-label="${sub}">${segs}<text x="70" y="68" text-anchor="middle" class="dn-big">${center}</text><text x="70" y="86" text-anchor="middle" class="dn-sub">${sub}</text></svg>
+  <div class="legend">${parts.map(p=>`<div class="lg"><span class="sw" style="background:${p.c};${p.o?'border:1px solid var(--muted)':''}"></span><span style="flex:1">${p.l}</span><span class="data">${p.v.toLocaleString()} · ${Math.round(p.v/total*100)}%</span></div>`).join('')}</div></div>`;
+}
+function hbars(rows,opts={}){
+  const max=Math.max(...rows.map(r=>r[1]));
+  return `<div class="hbars">${rows.map((r,i)=>`<div class="hb" title="${r[0]}: ${r[1].toLocaleString()}"><div class="hb-top"><span>${r[0]}</span><span class="data">${r[1].toLocaleString()}${opts.pct?` · ${Math.round(r[1]/opts.pct*100)}%`:''}</span></div><div class="hb-track"><i style="width:${r[1]/max*100}%;background:${(opts.hl||[]).includes(i)?'var(--sig)':'var(--muted)'}"></i></div></div>`).join('')}</div>`;
+}
+function cols(rows){
+  const max=Math.max(...rows.map(r=>r[1])); const W=520,H=180,bw=W/rows.length;
+  return `<svg viewBox="0 0 ${W} ${H+34}" class="colchart" role="img" aria-label="Contacts by city">
+    ${[0,.5,1].map(t=>`<line x1="0" x2="${W}" y1="${H-t*H+2}" y2="${H-t*H+2}" style="stroke:var(--line2)" />`).join('')}
+    ${rows.map((r,i)=>{const h=r[1]/max*(H-18); const x=i*bw+bw*.22, w=bw*.56; return `<g class="colg"><title>${r[0]}: ${r[1]}</title><rect x="${x}" y="${H-h+2}" width="${w}" height="${h}" rx="4" style="fill:${i===0?'var(--sig)':'var(--muted)'}"/><text x="${x+w/2}" y="${H-h-4}" text-anchor="middle" class="ax-val">${r[1]}</text><text x="${x+w/2}" y="${H+22}" text-anchor="middle" class="ax">${r[0]}</text></g>`;}).join('')}
+  </svg>`;
+}
+function line(pts,label){
+  const W=520,H=150,mx=Math.max(...pts),mn=Math.min(...pts)*0.9,max=mx*1.05; const step=W/(pts.length-1);
+  const xy=pts.map((v,i)=>[i*step,H-(v-mn)/(max-mn)*H]); const d=xy.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  return `<svg viewBox="-4 -10 ${W+8} ${H+34}" class="linechart" role="img" aria-label="${label}">
+    ${[0,.5,1].map(t=>`<line x1="0" x2="${W}" y1="${H-t*H}" y2="${H-t*H}" style="stroke:var(--line2)"/>`).join('')}
+    <path d="${d} L ${W} ${H} L 0 ${H} Z" style="fill:var(--sigbg)"/><path d="${d}" fill="none" style="stroke:var(--sig)" stroke-width="2"/>
+    ${xy.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===xy.length-1?5:3}" style="fill:${i===xy.length-1?'var(--sig)':'var(--bg)'};stroke:var(--sig)" stroke-width="2"><title>Week ${i+1}: ${pts[i].toLocaleString()} contacts</title></circle>`).join('')}
+    <text x="0" y="${H+22}" class="ax">12 weeks ago</text><text x="${W}" y="${H+22}" text-anchor="end" class="ax">This week · ${pts.at(-1).toLocaleString()}</text>
+  </svg>`;
+}
+function funnel(rows){
+  const max=rows[0][1];
+  return `<div class="funnel">${rows.map((r,i)=>{const w=Math.max(r[1]/max*100,1.5); const prev=i?rows[i-1][1]:null; const pc=prev?r[1]/prev*100:null; const conv=i?(prev?(pc>0&&pc<1?'<1%':Math.round(pc)+'%')+' of previous':'no one to convert yet'):'';return `<div class="fn"><div class="fn-l"><span>${r[0]}</span><span class="data">${r[1].toLocaleString()}</span></div><div class="fn-track"><i style="width:${w}%;background:${i===0?'var(--muted)':'var(--sig)'}"></i></div><span class="small fn-c">${conv}</span></div>`;}).join('')}</div>`;
+}
+
+/* ---------- Network Health ---------- */
+function health(){
+  const me=S.nhTab==='me';
+  const kpi=(v,l,s)=>`<div class="card kpi"><span class="lbl">${l}</span><span class="kpi-v">${v}</span><span class="small">${s}</span></div>`;
+  const inner=`<div class="page wide">
+  <div class="phead"><div><h1 class="h1" style="font-size:24px">Network Health</h1><span class="sub">How much of your market you can reach warmly, and what to do next.</span></div><div class="seg"><button class="${me?'on':''}" data-nh="me">My network</button><button class="${me?'':'on'}" data-nh="team">Team pool</button></div></div>
+  <div class="kpis">${me?kpi('7,839','Contacts','100% enriched · +412 this month')+kpi('835','Warm paths','212 Direct · 341 Warm · 282 Weak')+kpi('1','Intros sent','834 paths never asked'):kpi('10,498','Pooled contacts','7 of 7 members sharing')+kpi('2,659','Unlocked by teammates','people only a teammate knows')+kpi('836','Paths in the pool','Aadarsh 817 · Aju 14 · QA 1')}</div>
+  <div class="insight card"><span class="av" style="width:36px;height:36px;background:var(--sigbg);color:var(--sig)">${I.bolt}</span><div style="flex:1;min-width:220px"><div style="font-weight:600">You have 212 Direct paths and have asked through 1.</div><span class="small">The 10 with a recent round are the best place to start. One ask per bridge, drafted for you.</span></div><button class="btn btn-primary btn-sm" data-go="research-results">Show the 10</button></div>
+  <div class="charts">
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">Warm paths by warmth</span><span class="small">835 paths</span></div>${donut([{l:'Direct',v:212,c:'var(--live)'},{l:'Warm',v:341,c:'var(--sig)'},{l:'Weak',v:282,c:'var(--muted)'}],835,'835','warm paths')}</section>
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">Who you can reach</span><span class="small">by seniority</span></div>${donut([{l:'Decision makers',v:2838,c:'var(--sig)'},{l:'Managers',v:1552,c:'var(--ink2)'},{l:'Individual contributors',v:2297,c:'var(--muted)'},{l:'Unknown',v:1152,c:'var(--s4)',o:1}],7839,'36%','senior')}</section>
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">By sector</span><span class="small">top 7 of 24</span></div>${hbars([['IT services',973],['B2B SaaS',908],['Professional services',573],['Real estate & proptech',411],['Fintech',316],['Investors',265],['Large enterprise',241]],{pct:7839,hl:[1,4,5]})}<span class="small">Highlighted: sectors in your playbook.</span></section>
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">By role</span><span class="small">top 7</span></div>${hbars([['Founder / CEO',1591],['Engineering',1252],['Marketing',1071],['Sales / BD',677],['Operations',488],['Product',288],['HR',208]],{pct:7839,hl:[0]})}<span class="small">Highlighted: roles you want to reach.</span></section>
+    <section class="card chart c7"><div class="ch-h"><span class="h2" style="font-size:17px">By city</span><span class="small">top 8</span></div>${cols([['Bengaluru',590],['Mumbai',252],['Hyderabad',122],['Kochi',120],['Gurugram',107],['Chennai',82],['Noida',76],['Delhi',74]])}</section>
+    <section class="card chart c5"><div class="ch-h"><span class="h2" style="font-size:17px">Network growth</span><span class="small">contacts, 12 weeks</span></div>${line([5210,5380,5702,6010,6195,6388,6602,6840,7101,7390,7612,7839],'Contacts over 12 weeks')}</section>
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">Intro funnel</span><span class="small">last 90 days</span></div>${funnel([['Warm paths found',835],['Intros requested',1],['Bridge sent it',1],['Target replied',0],['Meetings',0]])}<span class="small">The drop is at the first step: paths are found but not asked. Today queues the best asks for you.</span></section>
+    <section class="card chart c6"><div class="ch-h"><span class="h2" style="font-size:17px">Top bridges</span><span class="small">by paths they open</span></div>${hbars([['Sourish Pal · Client Associates',156],['Sreenath Menon · IBM',57],['Sheenam Kathuria · Microsoft',33],['Akhil Marimuthu · Entrepreneurs First',28],['Karan Aneja · 3one4 Capital',26],['Syed Ahmed Bukhari · ServiceNow',23]],{hl:[0]})}<span class="small">Sourish opens 19% of your paths. Keep asks to him under 5 a month.</span></section>
+  </div>
+  <section class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px"><div class="ch-h"><span class="h2" style="font-size:17px">Coverage gaps</span><span class="small">demand you can’t serve yet</span></div>
+    ${[['“founders of bengaluru b2b saas companies”','Searched 2× · 0 warm paths','Your B2B SaaS contacts are engineers, not founders. A SaaSBoomi alumni list would add ~140 founders.','Upload a list'],['“fintech CFOs in Pune”','Searched 1× · 0 warm paths','No bridge in Pune finance. Riya knows 3 Pune CAs; ask her to share.','Ask Riya']].map(g=>`<div class="gap"><div style="flex:1;min-width:240px"><div style="font-weight:500">${g[0]}</div><div class="small">${g[1]} · ${g[2]}</div></div><button class="btn btn-secondary btn-sm" data-go="${g[3]==='Upload a list'?'data':'team'}">${g[3]}</button></div>`).join('')}
+  </section>
+  <details class="card fine"><summary class="small">How these numbers are counted</summary><p class="small" style="margin:10px 0 0">Contacts, warm paths and teammates’ contacts are separate counts and are never added together. A warm path needs a verified shared company, school, deal or recent conversation. Inferred starting points (2) are not counted as paths.</p></details>
+  </div>`;
+  return shell('Network Health',inner);
+}
+
+/* ---------- Team ---------- */
+function team(){
+  const M=[['Aadarsh K S (you)','aadarsh.ks@zeyhiorg.com','Admin',6139,817,'12 days ago'],['Aju G','aju.g@zeyhiorg.com','Admin',1992,14,'7 days ago'],['QA Verifier','qa@zeyhi.test','Member',3,1,'12 days ago'],['Abhijith Hari','abhijith.hari@zeyhiorg.com','Member',0,0,null],['Vijin Govind','vijin.govind@zeyhiorg.com','Member',0,0,null],['UAT Screens','uat.screens@zeyhi.test','Member',0,0,null]];
+  const never=M.filter(m=>!m[5]).length;
+  const inner=`<div class="page wide"><div class="phead"><div><h1 class="h1" style="font-size:24px">Team & Connectors</h1><span class="sub">7 of 7 members pool their networks. Each person decides for themselves.</span></div><div class="pills"><button class="btn btn-secondary btn-sm" style="height:38px" data-toast="Invite link copied">${I.plus}Invite</button></div></div>
+  <div class="kpis">${[['7','Members','all sharing'],['836','Paths in the pool','from 3 active members'],[never,'Never synced','their networks add nothing yet']].map((k,i)=>`<div class="card kpi"><span class="lbl">${k[1]}</span><span class="kpi-v" style="${i===2?'color:var(--sig-ink)':''}">${k[0]}</span><span class="small">${k[2]}</span></div>`).join('')}</div>
+  ${never?`<div class="insight card"><span class="av" style="width:36px;height:36px;background:var(--sigbg);color:var(--sig)">${I.info}</span><div style="flex:1;min-width:220px"><div style="font-weight:600">${never} teammates haven’t connected LinkedIn yet</div><span class="small">One nudge each, with a 2-minute setup link. Most teams unlock 20–40% more paths.</span></div><button class="btn btn-primary btn-sm" data-toast="Nudged ${never} teammates">Nudge all ${never}</button></div>`:''}
+  <div class="card tbl-wrap" style="overflow:visible"><div class="tbl-wrap"><div class="tbl head" style="grid-template-columns:2.2fr .8fr 2fr 1.2fr 44px;min-width:680px"><span class="lbl">Member</span><span class="lbl">Role</span><span class="lbl">Contribution</span><span class="lbl">Last sync</span><span></span></div>
+  ${M.map((m,i)=>`<div class="tbl" style="grid-template-columns:2.2fr .8fr 2fr 1.2fr 44px;min-width:680px;min-height:64px"><div style="display:flex;align-items:center;gap:10px;min-width:0">${av(m[0],32)}<div style="min-width:0"><div style="font-weight:500">${m[0]}</div><div class="small" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m[1]}</div></div></div><span class="small">${m[2]}</span><div style="display:flex;flex-direction:column;gap:6px"><div class="small" style="display:flex;justify-content:space-between;gap:12px"><span>${m[3].toLocaleString()} contacts</span><span>${m[4]} paths</span></div><div class="bar"><i style="width:${m[3]/6139*100}%"></i></div></div><span class="small" style="${m[5]?'':'color:var(--sig-ink)'}">${m[5]?'Synced '+m[5]:'Never synced'}</span><div class="qsel"><button class="icon-btn" data-mem="${i}">${I.dots}</button>${S.memMenu===i?`<div class="menu" style="left:auto;right:0">${m[5]?'':`<button data-toast="Nudged ${m[0].split(' ')[0]}">Nudge to sync</button>`}<button data-toast="Role change needs the other admin to confirm">Make admin</button><button data-toast="Transfer admin needs confirmation by email">Transfer admin</button><button style="color:var(--alert)" data-toast="Removal needs confirmation">Remove from team</button></div>`:''}</div></div>`).join('')}</div></div>
+  <span class="small">Sharing is each member’s own decision under India’s DPDP Act. Admins can see who shares but can’t switch it on for anyone.</span></div>`;
+  return shell('Team',inner);
+}
+
+/* ---------- Data sources ---------- */
+function srcCard(s){
+  const pill={on:['b-direct','Connected'],warn:['b-warm','Needs update'],off:['b-weak','Not connected'],upload:['b-weak','Upload'],soon:['b-out','Coming soon']}[s.st];
+  return `<div class="card src-card ${s.st==='soon'?'soon':''}"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><span class="av" style="width:40px;height:40px;border-radius:10px;background:var(--s2)">${s.ic}</span><span class="badge ${pill[0]}">${pill[1]}</span></div>
+  <div><div style="font-weight:600;font-size:16px">${s.n}${s.opt?' <span class="small" style="font-weight:400">· optional</span>':''}</div><div class="small">${s.d}</div></div>
+  ${s.stat?`<div class="small" style="color:var(--ink)">${s.stat}</div>`:''}
+  <div class="small" style="font-size:12px;display:flex;gap:6px;align-items:flex-start"><span style="color:var(--dim)">${I.shield}</span><span>${s.p}</span></div>
+  <div style="margin-top:auto" class="pills">${s.cta.map((c,i)=>`<button class="btn btn-sm ${i?'btn-ghost':s.st==='warn'?'btn-primary':'btn-secondary'}" ${c[1]?`data-go="${c[1]}"`:`data-toast="${c[2]||c[0]+' (prototype)'}"`}>${c[0]}</button>`).join('')}</div></div>`;
+}
+function dataSources(){
+  const main=[
+    {n:'LinkedIn',ic:I.people,st:'warn',d:'Connections, shared companies and schools.',stat:'7,839 contacts · last import Sep 10',p:'Reads profiles you’re connected to. Never posts or messages.',cta:[['Update extension to 1.5.0','','Opening the Chrome Web Store…'],['Import CSV instead']]},
+    {n:'Gmail & Google Calendar',ic:I.mail,st:'on',d:'Who you email and meet, and how recently.',stat:'318 people you’ve met · synced 2 h ago',p:'Reads senders, recipients and meeting guests. Never message bodies.',cta:[['Manage'],['Disconnect']]},
+    {n:'Outlook & Microsoft 365',ic:I.cal,st:'off',d:'Same as Google, for Outlook mail and calendar.',p:'Read-only. Asks for each permission when you connect.',cta:[['Connect Outlook']]},
+    {n:'WhatsApp',ic:I.chat,st:'upload',d:'Upload a chat export or phone contacts (.zip, .txt, .vcf).',p:'We keep names and numbers only. Message text is never stored.',cta:[['Upload export']]},
+    {n:'Slack',ic:I.chat,st:'off',d:'Shared channels and DMs with founders and co-investors.',p:'Reads member lists and who you talk to, not messages.',cta:[['Connect Slack']]},
+    {n:'Microsoft Teams',ic:I.team,st:'off',d:'External chats with people outside your firm.',p:'Reads participants only.',cta:[['Connect Teams']]},
+    {n:'HubSpot',ic:I.grid,st:'on',d:'Deals, owners and stages, both ways.',stat:'3 updates waiting in Workspace',p:'Writes only the fields you allow in Workspace sync rules.',cta:[['Sync rules','workspace']]},
+  ];
+  const lists=[
+    {n:'Alumni list',opt:1,ic:I.list,st:'upload',d:'Name, institution, grad year. Finds paths through shared schools.',p:'Used only for matching. Delete any time.',cta:[['Upload CSV']]},
+    {n:'Company list',opt:1,ic:I.list,st:'upload',d:'Target accounts or portfolio companies to watch.',p:'Used only for matching.',cta:[['Upload CSV']]},
+    {n:'Event or other list',opt:1,ic:I.list,st:'upload',d:'Attendee lists, community members, LP lists.',p:'Used only for matching.',cta:[['Upload CSV']]},
+  ];
+  const soon=[{n:'Obsidian',ic:I.brain,st:'soon',opt:1,d:'Your notes on people and deals, as context for asks.',p:'Local vault, read-only. You pick the folders.',cta:[['Notify me','','We’ll tell you when Obsidian is ready']]},{n:'Notion',ic:I.list,st:'soon',opt:1,d:'Deal notes and CRM-style databases.',p:'Read-only, per database.',cta:[['Notify me','','We’ll tell you when Notion is ready']]}];
+  const inner=`<div class="page wide"><div class="phead"><div><h1 class="h1" style="font-size:24px">Data Sources</h1><span class="sub">Warm paths come from where your relationships live. Connect more, find more.</span></div></div>
+  <div class="card summary"><div><span class="kpi-v" style="font-size:26px">3 of 7</span><span class="small"> connected</span></div><div class="bar" style="flex:1;min-width:120px;height:6px"><i style="width:43%"></i></div><span class="small">Connecting Outlook and WhatsApp typically adds 25–40% more Direct paths.</span></div>
+  <div class="insight card" style="border-color:var(--sig)"><span class="av" style="width:36px;height:36px;background:var(--sigbg);color:var(--sig)">${I.info}</span><div style="flex:1;min-width:220px"><div style="font-weight:600">LinkedIn sync is paused</div><span class="small">Your extension is on an old version and the disclosure changed. Update, then accept it once in the extension.</span></div><button class="btn btn-primary btn-sm" data-toast="Opening the Chrome Web Store…">Update extension</button><button class="btn btn-ghost btn-sm" data-sgo="data">Details</button></div>
+  <section style="display:flex;flex-direction:column;gap:12px"><span class="lbl">Where your relationships live</span><div class="srcgrid">${main.map(srcCard).join('')}</div></section>
+  <section style="display:flex;flex-direction:column;gap:12px"><span class="lbl">Lists · optional</span><div class="srcgrid">${lists.map(srcCard).join('')}</div></section>
+  <section style="display:flex;flex-direction:column;gap:12px"><span class="lbl">Coming soon</span><div class="srcgrid">${soon.map(srcCard).join('')}</div></section></div>`;
+  return shell('Data Sources',inner);
+}
+
+/* ---------- Settings ---------- */
+const STABS=[['account','Account',I.user],['playbook','Playbook',I.spark],['billing','Billing & credits',I.card],['api','API & MCP',I.key],['privacy','Privacy & sharing',I.shield],['data','Data & extension',I.plug]];
+function sec(title,sub,body,extra=''){ return `<section class="card sset"><div class="sset-h"><div><h3 class="h2" style="font-size:17px;margin:0">${title}</h3>${sub?`<span class="small">${sub}</span>`:''}</div>${extra}</div>${body}</section>`; }
+function settings(){
+  const t=S.stab; let body='';
+  if(t==='account') body=sec('Profile','',`<div style="display:flex;align-items:center;gap:16px">${av('Aadarsh K S',56)}<div><div style="font-weight:600;font-size:17px">Aadarsh K S</div><div class="small">aadarsh.ks@zeyhiorg.com · signed in with Google</div></div></div>`)+
+    sec('How you appear in intros','Bridges and targets see this line in every forwardable note.',`<div class="grid2">${fld('Job title','<div class="input"><input id="jt" value="Partner"></div>')}${fld('Firm','<div class="input"><input id="co" value="Zeyhi Ventures"></div>')}</div>${fld('LinkedIn profile','<div class="input"><input id="li" value="linkedin.com/in/aadarshks"></div>')}<div class="small" style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(--live)"></span>Saved automatically</div><div class="card" style="padding:14px 16px;background:var(--bg)"><span class="lbl">Preview</span><div class="quote" style="margin-top:8px">Aadarsh K S, Partner at Zeyhi Ventures, would like to connect with Priya about venture debt after Nimbly’s Series B.</div></div>`)+
+    sec('Your background','Schools and past employers find paths where you and a target overlap.',`<div class="pills">${['IIM Ahmedabad · 2012','NIT Calicut · 2008','Razorpay · 2014–18','Accel India · 2018–21'].map(b=>`<span class="chip on">${b}<span style="color:var(--dim)">${I.x}</span></span>`).join('')}<button class="chip">${I.plus}Add</button></div>`)+
+    sec('Sessions','',`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span class="small">Signed in on 2 devices · Chrome on Mac, Zeyhi on iPhone</span><div class="pills"><button class="btn btn-secondary btn-sm" data-toast="Signed out of other devices">Sign out other devices</button><button class="btn btn-ghost btn-sm" style="color:var(--alert)" data-toast="Account deletion needs email confirmation">Delete account</button></div></div>`);
+  if(t==='playbook') body=sec('Playbook','Shapes every search, ranking and draft.',`<div class="rows">${[['What you do','I lend · venture debt ₹10–60 Cr'],['Why now','Within 60 days of a round'],['Who to reach','CFO and Founder / CEO'],['Trusted bridges','Lead investors, CFO advisors & CAs'],['Voice','Short and direct'],['Geography','India · Bengaluru, Mumbai, Kochi first']].map(r=>`<div class="srow"><span class="small" style="width:150px;flex:none">${r[0]}</span><span style="flex:1">${r[1]}</span><button class="btn btn-ghost btn-sm" data-go="agent">Edit</button></div>`).join('')}</div>`)+
+    sec('Ask limits','Protects your bridges from too many asks.',`<div class="rows">${[['Asks per run','10'],['Asks per bridge per month','5'],['An ask expires after','72 hours'],['Nudges allowed','1'],['Default consent','Forward a note (L2) · IB: double opt-in']].map(r=>`<div class="srow"><span style="flex:1">${r[0]}</span><span class="data" style="color:var(--ink)">${r[1]}</span><button class="btn btn-ghost btn-sm" data-toast="Editable by admins">Edit</button></div>`).join('')}</div>`);
+  if(t==='billing'){ const used=[0,0,0,0,0,0,0,0];
+    body=sec('Credits','Shared by your whole organisation. Credits never expire.',`<div class="bill-top"><div><span class="kpi-v" style="font-size:44px">25</span><span class="small"> credits left</span></div><div class="pills"><span class="chip">Bought 25</span><span class="chip">Used 0</span></div></div><div class="note"><b>Charging is off for your organisation.</b> Nothing is deducted yet; this is your real balance. An admin can turn charging on.</div>
+    <div><span class="lbl">Usage · last 8 weeks</span><div class="spark">${used.map((u,i)=>`<i title="Week ${i+1}: ${u} credits" style="height:${4+u}px"></i>`).join('')}</div><span class="small">No credits used yet.</span></div>`)+
+    sec('What costs what','',`<div class="price">${[['Search (network + web, one pass)','1'],['Warm path revealed: bridge + draft','2'],['Deep research run','3'],['Contact enrichment (email, phone)','1'],['Re-running the same search within 24 h','Free'],['A search that finds nothing','Free'],['A path your team already revealed','Free']].map(p=>`<div class="srow"><span style="flex:1">${p[0]}</span><span class="badge ${p[1]==='Free'?'b-direct':'b-weak'}">${p[1]==='Free'?'Free':p[1]+' credit'+(p[1]==='1'?'':'s')}</span></div>`).join('')}</div>`)+
+    sec('Top up','',`<div class="packs">${[['50','₹4,000'],['300','₹21,000'],['1,200','₹72,000'],['4,000','₹2,00,000']].map((p,i)=>`<button class="card pack ${i===1?'on':''}" data-toast="Checkout for ${p[0]} credits (prototype)"><span class="kpi-v" style="font-size:24px">${p[0]}</span><span class="small">credits</span><span style="font-weight:600">${p[1]}</span></button>`).join('')}</div>`)+
+    sec('Invoices','',`<div class="small">No invoices yet. They’ll appear here with a PDF for each payment.</div>`);}
+  if(t==='api') body=sec('MCP server','Use Zeyhi from Claude, Cursor or any MCP client: “find me a warm path to the CFO of Nimbly”.',`<div class="srow" style="border:0;padding:0"><span style="flex:1">${S.mcp?'<span class="badge b-direct">Enabled for Zeyhi Org</span>':'<span class="badge b-weak">Disabled</span>'}</span><button class="toggle ${S.mcp?'on':''}" data-mcp aria-label="Enable MCP server"></button></div>
+    ${S.mcp?`<div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Add to Claude Desktop</span><pre class="code" id="mcpcode">{
+  "mcpServers": {
+    "zeyhi": { "url": "https://mcp.zeyhi.com/sse" }
+  }
+}</pre><div class="pills"><button class="btn btn-secondary btn-sm" data-copycode>${I.copy}Copy config</button><span class="small">Members sign in once from their client. Read-only tools: search, paths, drafts.</span></div></div>
+    <div><span class="lbl">Connected clients</span><div class="small" style="padding:10px 0">None yet. A row appears when a member signs in from an MCP client.</div></div>`:`<div class="small">When on, members see setup steps for their own client. Nothing can send messages through MCP.</div>`}`)+
+    sec('API keys','For your CRM, data warehouse or internal tools.',`<div class="tbl-wrap"><div class="tbl head" style="grid-template-columns:1.2fr 1.6fr 1fr 1fr 1fr 60px;min-width:600px"><span class="lbl">Name</span><span class="lbl">Key</span><span class="lbl">Created by</span><span class="lbl">Created</span><span class="lbl">Last used</span><span></span></div>${S.keys.map((k,i)=>`<div class="tbl" style="grid-template-columns:1.2fr 1.6fr 1fr 1fr 1fr 60px;min-width:600px"><span style="font-weight:500">${k[0]}</span><span class="data">${k[1]}</span><span class="small">${k[2]}</span><span class="small">${k[3]}</span><span class="small">${k[4]}</span><button class="btn btn-ghost btn-sm" style="color:var(--alert)" data-revoke="${i}">Revoke</button></div>`).join('')}</div>`,`<button class="btn btn-secondary btn-sm" data-newkey>${I.plus}New key</button>`)+
+    sec('Webhooks','Get a POST when a bridge replies or a meeting is booked.',`<div class="srow" style="border:0;padding:0"><span class="small" style="flex:1">intro.replied · intro.meeting_booked · path.found</span><span class="badge b-out">Coming soon</span></div>`)+
+    `<a class="small" style="color:var(--sig-ink)" data-toast="API docs open in a new tab (prototype)">Read the API and MCP docs →</a>`;
+  if(t==='privacy') body=sec('Your network','',`<div class="srow" style="border:0;padding:0;align-items:flex-start"><div style="flex:1"><div style="font-weight:600">Share my network with my team</div><span class="small">${S.share?'Teammates can find paths through your contacts and see your name as the bridge. Your contacts stay yours.':'Only you can find paths through your contacts.'}</span></div><button class="toggle ${S.share?'on':''}" data-share aria-label="Share my network"></button></div>
+    <button class="btn btn-ghost btn-sm" style="padding:0;align-self:flex-start" data-why>${S.why?'Hide':'Why is this'} ${S.share?'on':'off'} by default?</button>
+    ${S.why?`<div class="note small" style="line-height:20px">An admin added you, so sharing started on. People who sign up themselves start private, and so does anyone whose sign-up we can’t confirm. Your own choice replaces the default and only you can make it, as the DPDP Act requires.</div>`:''}`)+
+    sec('Team sharing mode','Admins only. Sets the starting point for new members.',`<div class="opts">${[['Default','Admin-invited members share; self sign-ups stay private.'],['Everyone starts shared','Members can still turn it off.'],['Everyone starts private','Members can still turn it on.']].map((o,i)=>`<button class="opt ${i===0?'on':''}"><span class="n">${i+1}</span><div style="flex:1;display:flex;flex-direction:column"><span>${o[0]}</span><span class="small" style="font-size:12px">${o[1]}</span></div></button>`).join('')}</div>`)+
+    sec('Your data','',`<div class="rows"><div class="srow"><span style="flex:1">Export everything Zeyhi holds about you</span><button class="btn btn-secondary btn-sm" data-toast="Export requested. You’ll get an email within an hour.">${I.dl}Export</button></div><div class="srow"><span style="flex:1">Delete imported contacts <span class="small">· keeps your account</span></span><button class="btn btn-ghost btn-sm" style="color:var(--alert)" data-toast="Deletion needs email confirmation">Delete</button></div><div class="srow"><span style="flex:1">Retention <span class="small">· contacts 24 months after last sync · run history 90 days</span></span></div></div>`);
+  if(t==='data') body=sec('Browser extension','Keeps LinkedIn connections in sync.',`<div class="steps">${[['Installed','v1.4.2 on Chrome','done'],['Update to 1.5.0','Required to turn sync back on','cur'],['Accept the new disclosure','Once, inside the extension','todo'],['Sync resumes','Automatically, daily','todo']].map((s,i)=>`<div class="rail-step"><span class="rail-dot ${s[2]}">${s[2]==='done'?I.check:i+1}</span><div><div style="font-weight:500">${s[0]}</div><div class="small">${s[1]}</div></div></div>`).join('')}</div>
+    <div class="pills"><button class="btn btn-primary btn-sm" data-toast="Opening the Chrome Web Store…">Update extension</button><button class="btn btn-secondary btn-sm" data-go="data">Import a CSV instead</button></div>
+    <details class="fine"><summary class="small">Consent details</summary><div class="small" style="margin-top:8px;line-height:20px">You agreed to disclosure 2026-08-24.1 on 10 Sept 2026. Consent is given in the extension, on the browser that does the reading, so Zeyhi can’t turn it on for you. Turning sync off stops future imports; contacts already imported stay until you delete them. <a style="color:var(--sig-ink)">Read the disclosure</a> · <a style="color:var(--alert)" data-toast="Consent withdrawn. Sync stopped.">Withdraw consent</a></div></details>`)+
+    sec('Connected sources','',`<div class="rows">${[['LinkedIn','Needs update','b-warm'],['Gmail & Google Calendar','Connected','b-direct'],['HubSpot','Connected','b-direct'],['Outlook, WhatsApp, Slack, Teams','Not connected','b-weak']].map(r=>`<div class="srow"><span style="flex:1">${r[0]}</span><span class="badge ${r[2]}">${r[1]}</span></div>`).join('')}</div><button class="btn btn-secondary btn-sm" style="align-self:flex-start" data-go="data">Manage all data sources ${I.arrow}</button>`);
+  const inner=`<div class="page wide"><div><h1 class="h1" style="font-size:24px">Settings</h1></div><div class="set-layout"><nav class="set-nav">${STABS.map(s=>`<button class="set-a ${t===s[0]?'on':''}" data-stab="${s[0]}">${s[2]}<span>${s[1]}</span>${s[0]==='data'?'<span class="dot" style="background:var(--sig);margin-left:auto"></span>':''}</button>`).join('')}</nav><div class="set-body">${body}</div></div></div>`;
+  return shell('Settings',inner);
+}
+
+/* ================= Lead profile (replaces path detail) ================= */
+I.phone='<svg class="ic" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>';
+I.lock='<svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
+I.pin='<svg class="ic" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+I.ext='<svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>';
+Object.assign(S,{lead:0, pf:'all', revealPhone:false, enrichOn:true, routeSel:0});
+
+/* platform registry: colour is a small brand-neutral dot; the name is always written, never colour alone */
+const PLAT={
+  linkedin:{n:'LinkedIn',c:'#4a8fd9',k:'public'}, x:{n:'X',c:'#c8c8c8',k:'public'}, reddit:{n:'Reddit',c:'#ff6a3d',k:'public'},
+  gmail:{n:'Gmail',c:'#e0655a',k:'private'}, outlook:{n:'Outlook',c:'#3f8ae0',k:'private'}, calendar:{n:'Calendar',c:'#43cf70',k:'private'},
+  whatsapp:{n:'WhatsApp',c:'#3fc46a',k:'private'}, slack:{n:'Slack',c:'#b07ad6',k:'shared'}, teams:{n:'Teams',c:'#7b83eb',k:'team'},
+  brain:{n:'Brain · Obsidian',c:'#9a7cf0',k:'private'}, news:{n:'News & filings',c:'#8a8a8a',k:'public'}
+};
+const VIS={public:['Public','b-weak'],private:['Only you','b-weak'],shared:['Shared channel','b-weak'],team:['Teammate · content hidden','b-out']};
+
+function leadData(i){
+  const p=PATHS[i]; const person=p.who.split(' · ')[0], role=p.who.split(' · ')[1]||'', first=person.split(' ')[0];
+  const b=p.bridge, bf=b.split(' ')[0];
+  const slug=p.co.toLowerCase().replace(/[^a-z]/g,'');
+  return {p,person,role,first,b,bf,
+    email:`${first.toLowerCase()}@${slug}.com`, phone:'+91 98450 1'+(20+i)+'10', city:['Bengaluru','Bengaluru','Mumbai','Bengaluru','Hyderabad','Kochi'][i]||'Bengaluru',
+    li:`linkedin.com/in/${person.toLowerCase().replace(/[^a-z]/g,'')}`, x:'@'+first.toLowerCase()+'_'+slug.slice(0,5),
+    prev:['CFO · Cureline (2019–24)','Founder · Zipdrop (2017–20)','Finance lead · Razorpay (2018–23)','Founder · Paylite (2016–19)','CFO · Ninjacart (2020–24)','Promoter · Saltwater (since 2004)'][i],
+    edu:['IIM Ahmedabad · 2012','IIT Madras · 2010','IIM Bangalore · 2014','BITS Pilani · 2011','ISB · 2015','—'][i],
+    company:{stage:p.why.split(',')[0], raised:p.why, size:['180 people','95 people','240 people','60 people','310 people','1,100 people'][i], hq:['Bengaluru','Bengaluru','Mumbai','Bengaluru','Hyderabad','Kochi'][i], investors:['Accel, Karthik Rao’s fund (lead)','Stellaris, Meera Iyer (co-invest)','Blume, Chiratae','Antler, 3one4','Elevation, Lightspeed','Family owned'][i]},
+    reasons:[`${b} led their last round and sits on the board`,`You emailed ${bf} 12 days ago and got a reply`,`You met ${bf} at SaaSBoomi in March (your calendar)`],
+    routes:[{w:p.w,t:`${b} forwards your note`,s:`${p.brole} · ${p.path}`,odds:'~22% meet',rec:1},{w:'direct',t:'Arjun Aravind (teammate) asks',s:'Arjun has 3 recent Teams chats with '+first+'. Name hidden until Arjun approves.',odds:'~30% meet'},{w:'weak',t:'Sanjay Kulkarni mentions you',s:'Same IIM-A batch as '+first+'. No contact in 14 months.',odds:'~6% meet'},{w:'out',t:'Message '+first+' directly',s:'Cold. Use only if every bridge declines.',odds:'~3% meet'}],
+    feed:[
+      {pl:'gmail',who:'You ↔ '+b,t:'Re: '+p.co+' board deck',s:bf+': “Happy to help with '+first+' once the round settles. Ping me.”',when:'12 days ago',g:'bridge'},
+      {pl:'whatsapp',who:'You ↔ '+b,t:'Chat',s:'Last message: “Let’s catch up after the board meeting.”',when:'3 days ago',g:'bridge'},
+      {pl:'calendar',who:'You · '+b,t:'Coffee at SaaSBoomi',s:'30 min · Bengaluru · Mar 14',when:'6 months ago',g:'bridge'},
+      {pl:'linkedin',who:person,t:'Posted about the round',s:'“Thrilled to share we closed our '+p.why.split(' ·')[0]+'. Next: building out finance and ops.” · 412 reactions',when:'11 days ago',g:'target'},
+      {pl:'x',who:p.x||('@'+first.toLowerCase()),t:'Hiring post',s:'“Looking for a Head of FP&A who has done a debt raise before. DMs open.”',when:'4 days ago',g:'target'},
+      {pl:'slack',who:person+' in #founders-blr',t:'Asked the channel',s:'“Anyone used venture debt post Series B? Looking for 12–18 mo runway extension.”',when:'6 days ago',g:'target'},
+      {pl:'teams',who:'Arjun Aravind ↔ '+person,t:'3 chats in the last 2 weeks',s:'Content stays private to Arjun. You only see that the conversation exists.',when:'2 weeks ago',g:'team'},
+      {pl:'reddit',who:'r/IndianStartups',t:p.co+' mentioned',s:'Thread “Best Series B raises of the quarter” names '+p.co+' (38 upvotes).',when:'9 days ago',g:'target'},
+      {pl:'brain',who:'Your note',t:p.co+' · meeting notes',s:'“'+first+' asked about RBF vs venture debt. Wants to avoid dilution before Series C.”',when:'Sep 2',g:'target'},
+      {pl:'news',who:'VCCircle · MCA filing',t:p.co+' raises '+p.why.split(',')[1]?.trim()||'',s:'Filing shows allotment on Sep 17. Lead: '+(b||'')+'’s fund.',when:'11 days ago',g:'target'}
+    ]};
+}
+
+function platChip(k,count){ const pl=PLAT[k]; return `<button class="chip ${S.pf===k?'on':''}" data-pf="${k}"><span class="dot" style="background:${pl.c}"></span>${pl.n}${count?` <span class="data" style="font-size:11px">${count}</span>`:''}</button>`; }
+
+function pathDetail(){
+  const L=leadData(S.lead||0), p=L.p;
+  const feed=L.feed.filter(f=>S.pf==='all'||f.pl===S.pf);
+  const counts={}; L.feed.forEach(f=>counts[f.pl]=(counts[f.pl]||0)+1);
+  const kv=(k,v)=>`<div class="kv"><span class="small">${k}</span><span>${v}</span></div>`;
+  const contact = S.enrichOn ? `
+      <div class="ct"><span class="ct-i">${I.mail}</span><div style="flex:1;min-width:0"><div class="ct-v">${L.email}</div><div class="small" style="font-size:12px">Work email · verified Sep 26</div></div><button class="icon-btn" data-copytxt="${L.email}" title="Copy">${I.copy}</button></div>
+      <div class="ct"><span class="ct-i">${I.phone}</span><div style="flex:1;min-width:0"><div class="ct-v">${S.revealPhone?L.phone:L.phone.slice(0,7)+' ••• ••'+L.phone.slice(-2)}</div><div class="small" style="font-size:12px">Mobile · ${S.revealPhone?'revealed by you · logged':'1 credit to reveal'}</div></div>${S.revealPhone?`<button class="icon-btn" data-copytxt="${L.phone}" title="Copy">${I.copy}</button>`:`<button class="btn btn-secondary btn-sm" data-reveal>Reveal</button>`}</div>
+      <div class="ct"><span class="ct-i">${I.people}</span><div style="flex:1;min-width:0"><div class="ct-v">${L.li}</div><div class="small" style="font-size:12px">LinkedIn · 2nd degree</div></div><a class="icon-btn" title="Open">${I.ext}</a></div>
+      <div class="ct"><span class="ct-i" style="font-weight:700;font-size:13px">𝕏</span><div style="flex:1;min-width:0"><div class="ct-v">${L.x}</div><div class="small" style="font-size:12px">X · public profile</div></div><a class="icon-btn" title="Open">${I.ext}</a></div>
+      <details class="fine" style="padding:0"><summary class="small" style="display:flex;gap:6px;align-items:center"><span style="color:var(--live)">${I.shield}</span>Compliant under your data licence</summary><div class="small" style="margin-top:8px;line-height:20px">Source: licensed enrichment partner. Lawful basis: legitimate interest for B2B outreach (DPDP Act 2023). ${L.first} can opt out, and every reveal is logged to your org. Contact details are never shown to teammates unless they reveal them too.</div></details>`
+    : `<div class="note" style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--muted)">${I.lock}</span><div><b>Email and phone are off for your org.</b><div class="small">They turn on once your data licence and DPA are signed. Until then Zeyhi shows LinkedIn and X only.</div><button class="btn btn-secondary btn-sm" style="margin-top:10px" data-toast="Request sent to your admin">Ask admin to enable</button></div></div>`;
+  const nodes=[['You','Aadarsh K S',''],[`Bridge · ${W[p.w][1]}`,L.b,p.brole],['Target',L.person,L.role+' · '+p.co]];
+  const inner=`<div class="page wide lead">
+    <button class="btn btn-ghost btn-sm" style="align-self:flex-start;padding-left:0" data-go="discover">${I.back}Back to results</button>
+    <header class="lead-h">
+      <div style="display:flex;gap:16px;align-items:center;min-width:0">${av(L.person,64)}<div style="min-width:0"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h1 class="h1">${L.person}</h1>${badge(p.w)}</div><div class="sub">${L.role} at <b style="color:var(--ink);font-weight:500">${p.co}</b> · ${L.city}</div><div class="small" style="margin-top:4px">${p.why}</div></div></div>
+      <div class="pills"><button class="btn btn-secondary" data-toast="Saved to Workspace">Save</button><button class="btn btn-secondary" data-toast="Added to S-Planner · Discovered">Add to S-Planner</button><button class="btn btn-primary" data-act="send:${S.lead||0}">Ask ${L.bf}</button></div>
+    </header>
+    <div class="stage">${['Discovered','Asked bridge','Bridge said yes','Meeting','Closed'].map((s,i)=>`<div class="st-i ${i<1?'done':i===1?'cur':''}"><span class="st-d"></span><span>${s}</span></div>`).join('')}</div>
+    <div class="lead-grid">
+      <div class="lead-main">
+        <section class="card sset">
+          <div class="sset-h"><div><h3 class="h2" style="font-size:17px;margin:0">Best path to ${L.first}</h3><span class="small">${L.reasons.length} reasons this path is ${W[p.w][1].toLowerCase()}</span></div><span class="small">Your network + 6 teammates</span></div>
+          <div class="pathline">${nodes.map((n,i)=>`${i?'<span class="pl-edge"></span>':''}<div class="pl-node">${av(n[1],44)}<div style="min-width:0"><div class="lbl">${n[0]}</div><div style="font-weight:500">${n[1]}</div>${n[2]?`<div class="small" style="font-size:12px">${n[2]}</div>`:''}</div></div>`).join('')}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">${L.reasons.map(r=>`<div style="display:flex;gap:10px;font-size:14px"><span style="color:var(--live)">${I.check}</span><span>${r}</span></div>`).join('')}</div>
+          <div class="quote" style="font-size:14px">${L.bf}, quick one. ${p.co} just closed their round and ${L.first} will be planning the next 18 months. Would you forward a two-line note? Happy to leave it if the timing’s off.</div>
+          <details class="fine" style="padding:0" ${S.routeOpen?'open':''}><summary class="small" data-routes>Other routes to ${L.first} (${L.routes.length-1})</summary>
+            <div class="opts" style="margin-top:10px">${L.routes.map((r,i)=>`<button class="opt ${S.routeSel===i?'on':''}" data-route="${i}"><span class="n">${i+1}</span><div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${r.t} ${badge(r.w)}${r.rec?'<span class="small" style="font-size:12px">recommended</span>':''}</span><span class="small" style="font-size:12px">${r.s}</span></div><span class="data">${r.odds}</span></button>`).join('')}</div></details>
+        </section>
+        <section class="card sset">
+          <div class="sset-h"><div><h3 class="h2" style="font-size:17px;margin:0">Conversations and mentions</h3><span class="small">${L.feed.length} signals from ${Object.keys(counts).length} places · newest first</span></div><button class="btn btn-ghost btn-sm" data-go="data">Add a source</button></div>
+          <div class="pills pf-row"><button class="chip ${S.pf==='all'?'on':''}" data-pf="all">All <span class="data" style="font-size:11px">${L.feed.length}</span></button>${Object.keys(counts).map(k=>platChip(k,counts[k])).join('')}</div>
+          <div class="feed">${feed.map(f=>{const pl=PLAT[f.pl]; const v=VIS[pl.k]; return `<div class="fi"><span class="fi-dot" style="background:${pl.c}"></span><div class="fi-b"><div class="fi-top"><span class="fi-pl">${pl.n}</span><span class="small" style="font-size:12px">${f.who}</span><span class="badge ${v[1]}" style="height:20px;font-size:11px">${v[0]}</span><span class="small" style="margin-left:auto;font-size:12px;white-space:nowrap">${f.when}</span></div><div style="font-weight:500;font-size:14px">${f.t}</div><div class="small">${f.s}</div>${f.g==='bridge'?`<span class="small" style="font-size:12px;color:var(--live)">Counts toward bridge strength</span>`:f.pl==='x'||f.pl==='slack'||f.pl==='linkedin'?`<span class="small" style="font-size:12px;color:var(--sig-ink)">Why-now signal</span>`:''}</div></div>`;}).join('')||`<div class="small" style="padding:20px 0">Nothing from ${PLAT[S.pf]?.n} yet.</div>`}</div>
+          <div class="small" style="border-top:1px solid var(--line2);padding-top:12px;font-size:12px">We show that a private conversation exists and when, never its content, unless it’s your own. Teammates’ chats stay hidden until they approve an ask.</div>
+        </section>
+      </div>
+      <aside class="lead-side">
+        <section class="card sset"><h3 class="h2" style="font-size:17px;margin:0">Contact</h3>${contact}</section>
+        <section class="card sset"><h3 class="h2" style="font-size:17px;margin:0">About ${L.first}</h3>${kv('Role',L.role)}${kv('Location',L.city)}${kv('Before',L.prev)}${kv('Education',L.edu)}${kv('In your network via',`${p.bridge==='—'?'No one yet':L.b+' and 2 others'}`)}</section>
+        <section class="card sset"><h3 class="h2" style="font-size:17px;margin:0">${p.co}</h3>${kv('Last round',L.company.raised)}${kv('Investors',L.company.investors)}${kv('Team',L.company.size)}${kv('HQ',L.company.hq)}<button class="btn btn-ghost btn-sm" style="padding:0;align-self:flex-start" data-go="research-results">Find others at ${p.co} ${I.arrow}</button></section>
+        <section class="card sset"><h3 class="h2" style="font-size:17px;margin:0">Your history</h3>${kv('Found by','Deep research #12 · Mon')}${kv('Quality of path','Strong · rated by Riya')}${kv('Owner','Aadarsh')}${kv('CRM','HubSpot · Nimbly deal · Qualified')}</section>
+      </aside>
+    </div></div>`;
+  return shell(L.person,inner);
+}
+
+/* ---------- router ---------- */
+const R={signin,setup1,setup2,setup3,agent:agentSetup,today,discover,research,'research-prompt':researchPrompt,'research-guided':researchGuided,'research-results':researchResults,workspace,path:pathDetail,intros:()=>intros(false),settings,planner,health,contacts,team,data:dataSources,empty:emptyState};
+function render(){
+  const root=document.getElementById('root');
+  const r = S.route==='discover' && S.mode==='research' ? 'research' : S.route;
+  let html=(R[r]||today)();
+  html+=historyDrawer();
+  if(S.modal!==null) html+=sendModal(S.modal);
+  if(S.toast) html+=`<div class="toast">${S.toast}</div>`;
+  root.innerHTML=html;
+  if(S.scrollBottom){ S.scrollBottom=false; requestAnimationFrame(()=>{ const m=document.querySelector('.main'); const q=document.getElementById('qcard'); if(q&&S.setup.step<4){ q.scrollIntoView({block:'center',behavior:'smooth'}); } else { if(m) m.scrollTo({top:m.scrollHeight,behavior:'smooth'}); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); } }); }
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-theme-toggle],[data-trace],[data-q],[data-tab],[data-wtab],[data-mode],[data-view],[data-sel],[data-qmenu],[data-qset],[data-act],[data-toast],[data-close],[data-to],[data-chan],[data-copy],[data-sent],[data-pb],[data-flip],[data-clearsel],[data-send],[data-sopt],[data-sother],[data-snext],[data-sback],[data-sskip],[data-sedit],[data-srun],[data-sfinish],[data-sexit],[data-sexitgo],[data-hist],[data-hclose],[data-hf],[data-hopen],[data-hpin],[data-nh],[data-mem],[data-stab],[data-mcp],[data-share],[data-why],[data-newkey],[data-revoke],[data-copycode],[data-sgo],[data-pf],[data-reveal],[data-copytxt],[data-route]');
+  if(!t) { if(S.qmenu!==null||S.memMenu!==null){S.qmenu=null;S.memMenu=null;render();} return; }
+  if(t.closest('[data-stop]') && t.hasAttribute('data-close')===false && e.target.closest('.scrim')===t){}
+  const d=t.dataset;
+
+
+  if(d.hist!==undefined){ S.hist=true; render(); setTimeout(()=>document.getElementById('hq')?.focus(),50); return; }
+  if(d.hclose!==undefined){ if(e.target.closest('[data-stop]') && !t.classList.contains('icon-btn')) return; S.hist=false; render(); return; }
+  if(d.hpin!==undefined){ e.stopPropagation(); const i=+d.hpin; S.pinned.has(i)?S.pinned.delete(i):S.pinned.add(i); render(); return; }
+  if(d.hf!==undefined){ S.hfilter=d.hf; render(); return; }
+  if(d.hopen!==undefined){ const h=HIST[+d.hopen]; S.hist=false; if(h.k==='deep'){ S.mode='research'; go('research-results'); } else { S.mode=h.k==='list'?'list':'search'; S.view=h.k==='list'?'table':'card'; go('discover'); } toast('Reopened “'+h.q.slice(0,40)+(h.q.length>40?'…':'')+'”. No credits used.'); return; }
+  if(d.nh!==undefined){ S.nhTab=d.nh; render(); return; }
+  if(d.mem!==undefined){ S.memMenu=S.memMenu===+d.mem?null:+d.mem; render(); return; }
+  if(d.stab!==undefined){ S.stab=d.stab; render(); window.scrollTo(0,0); document.querySelector('.main')?.scrollTo(0,0); return; }
+  if(d.sgo!==undefined){ S.stab=d.sgo; go('settings'); return; }
+  if(d.mcp!==undefined){ S.mcp=!S.mcp; render(); toast(S.mcp?'MCP server enabled for Zeyhi Org':'MCP server disabled'); return; }
+  if(d.share!==undefined){ S.share=!S.share; render(); toast(S.share?'Your network is shared with your team':'Your network is now private'); return; }
+  if(d.why!==undefined){ S.why=!S.why; render(); return; }
+  if(d.newkey!==undefined){ S.keys.push(['Key '+(S.keys.length+1),'zk_live_••••'+Math.random().toString(16).slice(2,6),'Aadarsh','Today','Never']); render(); toast('Key created. Copy it now; it won’t be shown again.'); return; }
+  if(d.revoke!==undefined){ S.keys.splice(+d.revoke,1); render(); toast('Key revoked'); return; }
+  if(d.copycode!==undefined){ const txt=document.getElementById('mcpcode')?.textContent||''; (navigator.clipboard?.writeText(txt)||Promise.reject()).then(()=>toast('Config copied')).catch(()=>toast('Select the config and copy it')); return; }
+
+  if(d.pf!==undefined){ S.pf=d.pf; render(); return; }
+  if(d.reveal!==undefined){ S.revealPhone=true; render(); toast('Phone revealed · 1 credit · logged to your org'); return; }
+  if(d.copytxt!==undefined){ (navigator.clipboard?.writeText(d.copytxt)||Promise.reject()).then(()=>toast('Copied')).catch(()=>toast(d.copytxt)); return; }
+  if(d.route!==undefined){ S.routeSel=+d.route; S.routeOpen=true; render(); return; }
+  if(d.sopt!==undefined){ const s=S.setup,i=s.step,k=+d.sopt; if(SQ[i].multi){ s.ans[i].has(k)?s.ans[i].delete(k):s.ans[i].add(k); } else { s.ans[i]=new Set([k]); } render(); return; }
+  if(d.sother!==undefined){ const ta=document.querySelector('.composer textarea'); if(ta){ ta.focus(); ta.placeholder='Type your answer to question '+(S.setup.step+1)+' and press ⏎'; } return; }
+  if(d.snext!==undefined){ const s=S.setup; if(!s.ans[s.step].size && !s.other[s.step]) return; advanceSetup(); return; }
+  if(d.sskip!==undefined){ const s=S.setup; s.ans[s.step]=new Set(); s.other[s.step]=''; advanceSetup(); return; }
+  if(d.sback!==undefined){ const s=S.setup; if(s.step>0){ s.step--; S.scrollBottom=true; render(); } return; }
+  if(d.sedit!==undefined){ const s=S.setup; if(s.step>=5){ toast('Edit it in Settings → Playbook. Your first run already used these answers.'); return; } s.returnTo = s.step; s.step=+d.sedit; s.editingBack=true; S.scrollBottom=true; render(); return; }
+  if(d.srun!==undefined){ startRun(); return; }
+  if(d.sexit!==undefined){ S.setup.exitOpen=!S.setup.exitOpen; render(); return; }
+  if(d.sexitgo!==undefined){ S.setup.exitOpen=false; S.setup.exited=true; go('today'); toast('Setup paused. Pick up from the banner anytime.'); return; }
+  if(d.sfinish!==undefined){ S.setup.done=true; S.setup.exitOpen=false; if(S.setup.step<6) S.setup.step=Math.max(S.setup.step,4); if(d.go){ if(d.go.startsWith('research')) S.mode='research'; go(d.go); toast('Setup complete. Welcome to Zeyhi.'); } else if(d.act){ S.modal=+d.act.split(':')[1]; S.to='bridge'; go('today'); S.modal=0; render(); } return; }
+  if(d.lead!==undefined){ S.lead=+d.lead; S.pf='all'; S.revealPhone=false; S.routeSel=0; }
+  if(d.go!==undefined){ if(d.go==='discover'){S.mode='search';} if(d.go.startsWith('research')){S.mode='research';} go(d.go); return; }
+  if(d.themeToggle!==undefined){ setTheme(isLight()?'dark':'light'); return; }
+  if(d.trace!==undefined){ S.traceOpen[d.trace]=!S.traceOpen[d.trace]; render(); return; }
+  if(d.q!==undefined){ const i=+d.i; if(d.q==='q2'){ S.q2.has(i)?S.q2.delete(i):S.q2.add(i);} else S[d.q]=i; render(); return; }
+  if(d.tab!==undefined){ S.tab=d.tab; render(); return; }
+  if(d.wtab!==undefined){ S.wtab=d.wtab; render(); return; }
+  if(d.mode!==undefined){ S.mode=d.mode; if(d.mode==='research') go('research'); else if(d.mode==='list'){ S.view='table'; go('discover'); } else { go('discover'); } return; }
+  if(d.view!==undefined){ S.view=S.view==='card'?'table':'card'; render(); return; }
+  if(d.sel!==undefined){ const i=+d.sel; S.sel.has(i)?S.sel.delete(i):S.sel.add(i); render(); return; }
+  if(d.clearsel!==undefined){ S.sel.clear(); render(); return; }
+  if(d.qmenu!==undefined){ S.qmenu=S.qmenu===+d.qmenu?null:+d.qmenu; render(); return; }
+  if(d.qset!==undefined){ const [i,q]=d.qset.split(':'); PATHS[+i].q=q; S.qmenu=null; toast(`Quality set to ${q}. Visible to the whole team.`); return; }
+  if(d.pb!==undefined){ S.playbook=+d.pb; render(); return; }
+  if(d.flip!==undefined){ t.classList.toggle('on'); return; }
+  if(d.act!==undefined){ const [k,v]=d.act.split(':'); if(k==='send'){ S.modal=+v; S.to='bridge'; render(); } else if(k==='toast') toast(d.act.slice(6)); else go(d.act); return; }
+  if(d.toast!==undefined){ toast(d.toast); return; }
+  if(d.close!==undefined){ if(e.target.closest('[data-stop]') && !t.classList.contains('icon-btn')) return; S.modal=null; render(); return; }
+  if(d.to!==undefined){ S.to=d.to; render(); return; }
+  if(d.chan!==undefined){ S.chan=d.chan; render(); return; }
+  if(d.copy!==undefined){ const txt=document.getElementById('draft')?.value||''; (navigator.clipboard?.writeText(txt)||Promise.reject()).then(()=>toast('Copied. Paste it where you talk to them, then mark it sent.')).catch(()=>{document.getElementById('draft')?.select();toast('Select and copy the draft, then mark it sent.');}); return; }
+  if(d.sent!==undefined){ PATHS[+d.sent].status='Asked · waiting'; PATHS[+d.sent].hot=false; S.modal=null; toast('Marked as sent. Expires in 72 h; one nudge allowed.'); return; }
+  if(d.send!==undefined){ const ta=t.closest('.composer').querySelector('textarea'); const v=(ta.value||'').trim(); if(!v){toast('Type something first');return;} if(S.route==='research'){ go('research-prompt'); } else if(S.route==='research-prompt'||S.route==='research-guided'){ go('research-results'); } else if(S.route==='agent'){ const st=S.setup; ta.value=''; if(st.step<4){ st.other[st.step]=v; if(!SQ[st.step].multi) st.ans[st.step]=new Set(); advanceSetup(); } else if(st.step===4){ startRun(); } else toast('Noted.'); } else toast('Sent to Zeyhi (prototype)'); return; }
+});
+document.addEventListener('input',e=>{ if(e.target.id==='hq'){ S.hq=e.target.value; const pos=e.target.selectionStart; render(); const el=document.getElementById('hq'); if(el){ el.focus(); el.setSelectionRange(pos,pos);} } });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&S.hist){ S.hist=false; render(); return; }
+  if(e.key==='Escape'){ if(S.modal!==null){S.modal=null;render();return;} if(S.setup.exitOpen){S.setup.exitOpen=false;render();return;} }
+  if(S.route!=='agent'||S.setup.step>=4||S.modal!==null) return;
+  const tag=(e.target.tagName||'').toLowerCase(); if(tag==='textarea'||tag==='input'||tag==='select') { if(tag==='textarea'&&e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); document.querySelector('[data-send]')?.click(); } return; }
+  const q=SQ[S.setup.step]; const n=parseInt(e.key,10);
+  if(n>=1&&n<=q.opts.length){ document.querySelector(`[data-sopt="${n}"]`)?.click(); }
+  else if(n===q.opts.length+1){ document.querySelector('[data-sother]')?.click(); e.preventDefault(); }
+  else if(e.key==='Enter'){ document.querySelector('[data-snext]')?.click(); }
+});
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(R[h] && h!==S.route){ S.route=h; if(h.startsWith('research')) S.mode='research'; render(); } });
+try{ const t=localStorage.getItem('zeyhi-theme'); if(t) document.documentElement.setAttribute('data-theme',t); }catch(e){}
+const h=location.hash.slice(1); if(R[h]){ S.route=h; if(h.startsWith('research')) S.mode='research'; }
+render();
+})();
+</script>
+
+</body></html>
